@@ -3,180 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRO PART SYSTEM - Workspace Interactivo</title>
+    <title>PRO PART SYSTEM - Full Connect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700;900&display=swap');
         body { font-family: 'Roboto', sans-serif; background-color: #05080f; color: #f0f6fc; overflow: hidden; }
         .font-tech { font-family: 'Orbitron', sans-serif; }
-        
         .hoja-pdf { 
             background: white; color: black; 
-            width: 100%; max-width: 900px; min-height: 1050px; 
-            box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.2); 
-            margin: 0 auto; padding: 40px; 
-            position: relative;
+            width: 100%; max-width: 900px; min-height: 1100px; 
+            box-shadow: 0 0 50px rgba(6, 182, 212, 0.3); 
+            margin: 0 auto; padding: 45px; position: relative;
         }
-        
-        .hologram-effect { filter: drop-shadow(0 0 5px rgba(6, 182, 212, 0.8)); }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #05080f; }
-        ::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 4px; }
-        
-        .mic-active { color: #ef4444; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .tag-diag { background: #991b1b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .tag-master { background: #1e3a8a; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body class="h-screen flex flex-col">
 
-    <header class="bg-[#010409] border-b border-[#1e3a8a] p-3 flex justify-between items-center z-20">
+    <header class="bg-[#010409] border-b border-blue-900 p-3 flex justify-between items-center z-20">
         <div class="flex items-center gap-3">
-            <i class="fas fa-atom text-blue-500 text-3xl hologram-effect"></i>
-            <div>
-                <h1 class="font-tech text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-blue-500 to-blue-400 tracking-wider">
-                    PRO PART SYSTEM <span class="text-gray-400 text-sm font-light tracking-widest">PROFESIONAL</span>
-                </h1>
-            </div>
+            <i class="fas fa-atom text-cyan-400 text-2xl animate-spin-slow"></i>
+            <h1 class="font-tech text-lg font-bold text-white tracking-widest">PRO PART <span class="text-red-600">SYSTEM</span></h1>
         </div>
-        <div class="hidden md:flex items-center gap-4 text-xs">
-            <span class="text-green-400 font-bold"><i class="fas fa-database"></i> Motor IA Activo</span>
-            <span class="text-gray-400 border-l border-gray-700 pl-4">Dir. Fernando Millán</span>
+        <div class="flex gap-4">
+            <div id="status-master" class="text-[10px] text-gray-500"><i class="fas fa-circle"></i> Master DB</div>
+            <div id="status-diag" class="text-[10px] text-gray-500"><i class="fas fa-circle"></i> Diag DB</div>
         </div>
     </header>
 
-    <nav class="bg-[#0d1117] border-b border-[#30363d] p-3 z-10 shadow-lg flex flex-wrap gap-3 items-center justify-between">
-        
-        <div class="flex items-center gap-2 bg-gray-900 p-1.5 rounded-lg border border-gray-700">
-            <input type="file" id="file-upload" class="hidden" accept="image/*,.pdf" onchange="archivoCargado(this)">
-            <button onclick="document.getElementById('file-upload').click()" class="bg-gray-800 hover:bg-gray-700 text-blue-400 px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-2">
-                <i class="fas fa-upload"></i> <span id="file-label">Foto/PDF</span>
-            </button>
+    <nav class="bg-[#0d1117] border-b border-gray-800 p-4 flex gap-3 shadow-2xl">
+        <div class="flex-1 relative">
+            <input type="text" id="main-search" placeholder="Buscar falla, código DTC, marca o componente..." 
+                   class="w-full bg-gray-900 border border-blue-500/30 rounded-lg p-3 pl-10 text-white focus:outline-none focus:border-cyan-500 transition-all">
+            <i class="fas fa-bolt absolute left-3 top-4 text-cyan-500"></i>
         </div>
-
-        <div class="flex items-center gap-3 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700 text-xs font-bold">
-            <label class="flex items-center cursor-pointer text-gray-300 hover:text-white transition">
-                <input type="checkbox" id="chk-diagramas" class="mr-2 accent-blue-600" checked>
-                <i class="fas fa-project-diagram mr-1 text-blue-400"></i> Diagramas
-            </label>
-            <div class="h-4 w-px bg-gray-600"></div>
-            <label class="flex items-center cursor-pointer text-gray-300 hover:text-white transition">
-                <input type="checkbox" id="chk-ampliado" class="mr-2 accent-green-600">
-                <i class="fas fa-book-open mr-1 text-green-400"></i> Ampliado
-            </label>
-        </div>
-
-        <div class="flex-1 flex items-center gap-2 min-w-[300px]">
-            <div class="relative w-full flex items-center bg-gray-900 border border-blue-900/50 rounded-lg overflow-hidden focus-within:border-blue-500 transition-colors">
-                <button id="btn-mic" onclick="iniciarDictado()" class="px-4 py-2 text-gray-400 hover:text-red-500 transition border-r border-gray-800" title="Dictar por voz">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <input type="text" id="prompt-input" placeholder="Ej: Genera el diagrama del pedal A4 o Despiece del alternador..." class="w-full bg-transparent p-2 text-sm text-white focus:outline-none">
-                <button onclick="procesarProPart()" class="bg-blue-700 hover:bg-blue-600 text-white px-5 py-2 text-xs font-bold transition flex items-center gap-2">
-                    <i class="fas fa-brain"></i> EXTRAER
-                </button>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <button onclick="imprimirDocumento()" class="bg-gray-800 hover:bg-blue-900 border border-gray-700 text-gray-300 px-3 py-1.5 rounded text-xs font-bold transition">
-                <i class="fas fa-print text-blue-400 mr-1"></i> Imprimir
-            </button>
-            <button onclick="compartirWhatsApp()" class="bg-gray-800 hover:bg-green-900 border border-gray-700 text-gray-300 px-3 py-1.5 rounded text-xs font-bold transition">
-                <i class="fab fa-whatsapp text-green-500"></i>
-            </button>
-        </div>
+        <button onclick="superBusqueda()" class="bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-600 hover:to-cyan-600 px-8 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2">
+            <i class="fas fa-search-plus"></i> ESCANEAR BASE
+        </button>
     </nav>
 
-    <div class="flex-1 overflow-y-auto p-4 md:p-10 relative bg-[#05080f]">
-        
-        <div id="idle-state" class="flex flex-col items-center justify-center h-full text-center mt-10">
-            <i class="fas fa-search-location text-6xl text-gray-700 mb-4 opacity-50"></i>
-            <h2 class="font-tech text-2xl text-gray-500 font-bold">BASE DE DATOS LISTA</h2>
-            <p class="text-sm text-gray-600 mt-2">Dile a la IA qué componente o vehículo necesitas analizar.</p>
+    <main class="flex-1 overflow-y-auto p-6 bg-slate-950">
+        <div id="idle-screen" class="h-full flex flex-col items-center justify-center text-gray-700">
+            <i class="fas fa-network-wired text-8xl mb-6 opacity-10"></i>
+            <p class="font-tech text-2xl tracking-tighter opacity-30">ESPERANDO ORDEN DEL COMANDANTE MILLÁN</p>
         </div>
 
-        <div id="loading-state" class="flex flex-col items-center justify-center h-full hidden mt-10">
-            <i class="fas fa-cogs fa-spin text-6xl text-blue-600 mb-4"></i>
-            <h2 class="font-tech text-xl text-cyan-400 animate-pulse">Consultando Base Pro Part...</h2>
-        </div>
-
-        <div id="result-state" class="hidden w-full">
+        <div id="output-report" class="hidden">
             <div class="hoja-pdf">
-                
-                <div class="border-b-4 border-[#991b1b] pb-4 mb-6 flex justify-between items-end">
+                <div class="flex justify-between border-b-4 border-black pb-4 mb-6">
                     <div>
-                        <h1 class="text-4xl font-black text-[#1e3a8a] tracking-tighter">PRO PART <span class="text-[#991b1b]">SYSTEM</span></h1>
-                        <p class="text-sm font-bold text-gray-700 mt-1 uppercase tracking-widest">Reporte Técnico Generativo</p>
+                        <h2 class="text-4xl font-black tracking-tighter">REPORT <span class="text-red-700">P.P.S.</span></h2>
+                        <p class="text-xs font-bold text-gray-600">REFACCIONARIA Y TALLER ELÉCTRICO MILLÁN</p>
                     </div>
-                    <div class="text-right">
-                        <p class="text-sm font-bold text-gray-800">Taller Millán: 777 683 81 96</p>
-                        <p class="text-xs text-gray-500">ID Doc: PPS-GEN-001</p>
-                    </div>
-                </div>
-
-                <div id="dinamico-container">
-                    </div>
-
-                <div class="absolute bottom-10 left-10 right-10 flex justify-between items-end border-t-2 border-gray-300 pt-6">
-                    <div class="text-center w-1/3">
-                        <div class="h-16 flex items-end justify-center">
-                            <p style="font-family: 'Brush Script MT', cursive; font-size: 36px; color: #1e3a8a; transform: rotate(-3deg);">Fernando Millán</p>
-                        </div>
-                        <div class="border-t border-black w-full mt-2"></div>
-                        <p class="font-bold text-sm mt-1">FERNANDO MILLÁN</p>
-                        <p class="text-xs text-gray-500">Director Pro Part System</p>
-                    </div>
-                    <div class="w-1/3 text-right">
-                        <p class="text-[10px] text-gray-400">Documento extraído de Base de Datos Fidedigna.</p>
+                    <div class="text-right text-xs">
+                        <p><strong>FECHA:</strong> <span id="current-date"></span></p>
+                        <p><strong>UBICACIÓN:</strong> CUERNAVACA, MOR.</p>
+                        <p><strong>TEL:</strong> 777 683 81 96</p>
                     </div>
                 </div>
 
+                <div id="render-area">
+                    </div>
+
+                <div class="absolute bottom-10 left-10 right-10 flex justify-between items-end border-t border-gray-300 pt-4">
+                    <div class="text-center">
+                        <p style="font-family: 'Brush Script MT', cursive; font-size: 30px;" class="text-blue-800">Fernando Millán</p>
+                        <div class="w-48 border-t border-black mx-auto"></div>
+                        <p class="text-[10px] font-bold">FIRMA AUTORIZADA</p>
+                    </div>
+                    <p class="text-[9px] text-gray-400">Software Pro Part System v2.5 - Conectado a Repositorio GitHub</p>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        function archivoCargado(input) {
-            if (input.files && input.files[0]) {
-                document.getElementById('file-label').innerText = "Cargado: " + input.files[0].name.substring(0, 10);
-                document.getElementById('file-label').classList.add('text-green-400');
+        const RAW_MASTER = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/master_data.json";
+        const RAW_DIAG = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/diagn%C3%B3sticos.json";
+
+        let db_master = [];
+        let db_diag = [];
+
+        // Carga inicial de ambas bases
+        async function conectarBases() {
+            try {
+                const [res1, res2] = await Promise.all([fetch(RAW_MASTER), fetch(RAW_DIAG)]);
+                db_master = await res1.json();
+                db_diag = await res2.json();
+                
+                document.getElementById('status-master').classList.replace('text-gray-500', 'text-green-500');
+                document.getElementById('status-diag').classList.replace('text-gray-500', 'text-green-500');
+            } catch (e) {
+                console.error("Error conectando bases", e);
             }
         }
 
-        let reconocimiento = null;
-        function iniciarDictado() {
-            const btnMic = document.getElementById('btn-mic');
-            const inputPrompt = document.getElementById('prompt-input');
+        function superBusqueda() {
+            const query = document.getElementById('main-search').value.toLowerCase();
+            if(!query) return;
 
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Tu navegador no soporta el micrófono integrado. Por favor usa Google Chrome.");
+            document.getElementById('idle-screen').classList.add('hidden');
+            document.getElementById('output-report').classList.remove('hidden');
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString();
+
+            // Filtrar en Master Data
+            const resultsMaster = db_master.filter(i => 
+                Object.values(i).some(val => String(val).toLowerCase().includes(query))
+            );
+
+            // Filtrar en Diagnósticos
+            const resultsDiag = db_diag.filter(i => 
+                Object.values(i).some(val => String(val).toLowerCase().includes(query))
+            );
+
+            renderReport(resultsMaster, resultsDiag);
+        }
+
+        function renderReport(master, diag) {
+            const area = document.getElementById('render-area');
+            let html = "";
+
+            if(master.length === 0 && diag.length === 0) {
+                area.innerHTML = "<h3 class='text-red-600 font-bold'>NO SE ENCONTRÓ INFORMACIÓN EN NINGUNA BASE.</h3>";
                 return;
             }
 
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            reconocimiento = new SpeechRecognition();
-            reconocimiento.lang = 'es-MX';
+            // SECCIÓN DIAGNÓSTICOS (Prioridad: La experiencia)
+            if(diag.length > 0) {
+                html += `<div class="mb-6"><span class="tag-diag">MÓDULO DE SOLUCIONES</span>`;
+                diag.forEach(d => {
+                    html += `
+                        <div class="mt-2 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                            <h4 class="font-bold text-red-900 text-lg uppercase">${d.falla || 'Falla General'}</h4>
+                            <p class="text-sm mt-1"><strong>SÍNTOMA:</strong> ${d.sintoma || 'N/A'}</p>
+                            <p class="text-sm mt-1"><strong>SOLUCIÓN TÉCNICA:</strong> <span class="text-green-700 font-bold">${d.solucion || 'N/A'}</span></p>
+                            ${d.dtc ? `<p class="text-xs mt-2 bg-white inline-block p-1 border">DTC: ${d.dtc}</p>` : ''}
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
 
-            reconocimiento.onstart = function() {
-                btnMic.classList.add('mic-active');
-                inputPrompt.placeholder = "Escuchando...";
-            };
+            // SECCIÓN MASTER (Pinouts y Datos Técnicos)
+            if(master.length > 0) {
+                html += `<div><span class="tag-master">DATOS TÉCNICOS Y PINOUTS</span>`;
+                master.forEach(m => {
+                    html += `
+                        <div class="mt-2 p-3 border-b border-gray-200 grid grid-cols-2 gap-2 text-xs">
+                            <div class="col-span-2 bg-gray-100 p-1 font-bold">${m.componente} - ${m.sistema}</div>
+                            <div><strong>PIN:</strong> <span class="text-blue-700 font-bold">${m.pin || 'N/A'}</span></div>
+                            <div><strong>COLOR:</strong> ${m.color || 'N/A'}</div>
+                            <div><strong>ORIGEN:</strong> ${m.ruta_origen || 'N/A'}</div>
+                            <div><strong>PRUEBA:</strong> ${m.prueba || 'N/A'}</div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
 
-            reconocimiento.onresult = function(event) {
-                inputPrompt.value = event.results[0][0].transcript;
-            };
-
-            reconocimiento.onend = function() {
-                btnMic.classList.remove('mic-active');
-                procesarProPart(); // Auto-procesa cuando dejas de hablar
-            };
-
-            reconocimiento.start();
+            area.innerHTML = html;
         }
 
-        // LÓGICA INTELIGENTE: CONECTA EL TEXTO CON EL RESULTADO
-        function procesarProPart() {
-            const promptTexto = document.getElementById('prompt-input').value.toLowerCase();
-            const incluirDiagrama = document.getElementById('chk-diagramas').checked;
-            const contenedor = document.getElementById('dinamico
+        conectarBases();
+    </script>
+</body>
+</html>
