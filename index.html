@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRO PART SYSTEM - Full Connect</title>
+    <title>PRO PART SYSTEM - MASTER UNIFICADO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -18,36 +18,53 @@
         }
         .tag-diag { background: #991b1b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
         .tag-master { background: #1e3a8a; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .mic-active { color: #ef4444; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        @media print { .no-print { display: none; } body { background: white; } .hoja-pdf { box-shadow: none; margin: 0; width: 100%; } }
     </style>
 </head>
 <body class="h-screen flex flex-col">
 
-    <header class="bg-[#010409] border-b border-blue-900 p-3 flex justify-between items-center z-20">
+    <header class="bg-[#010409] border-b border-blue-900 p-3 flex justify-between items-center z-20 no-print">
         <div class="flex items-center gap-3">
-            <i class="fas fa-atom text-cyan-400 text-2xl animate-spin-slow"></i>
-            <h1 class="font-tech text-lg font-bold text-white tracking-widest">PRO PART <span class="text-red-600">SYSTEM</span></h1>
+            <i class="fas fa-atom text-cyan-400 text-3xl"></i>
+            <div>
+                <h1 class="font-tech text-xl font-bold text-white tracking-widest uppercase">PRO PART <span class="text-red-600">SYSTEM</span></h1>
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Director: Fernando Millán</p>
+            </div>
         </div>
         <div class="flex gap-4">
-            <div id="status-master" class="text-[10px] text-gray-500"><i class="fas fa-circle"></i> Master DB</div>
-            <div id="status-diag" class="text-[10px] text-gray-500"><i class="fas fa-circle"></i> Diag DB</div>
+            <div id="status-master" class="text-[10px] text-red-500 font-bold"><i class="fas fa-circle"></i> MASTER DB</div>
+            <div id="status-diag" class="text-[10px] text-red-500 font-bold"><i class="fas fa-circle"></i> DIAG DB</div>
         </div>
     </header>
 
-    <nav class="bg-[#0d1117] border-b border-gray-800 p-4 flex gap-3 shadow-2xl">
-        <div class="flex-1 relative">
-            <input type="text" id="main-search" placeholder="Buscar falla, código DTC, marca o componente..." 
-                   class="w-full bg-gray-900 border border-blue-500/30 rounded-lg p-3 pl-10 text-white focus:outline-none focus:border-cyan-500 transition-all">
-            <i class="fas fa-bolt absolute left-3 top-4 text-cyan-500"></i>
+    <nav class="bg-[#0d1117] border-b border-gray-800 p-3 flex flex-wrap gap-4 items-center shadow-2xl no-print">
+        <div class="flex-1 flex items-center bg-gray-900 border border-blue-900/50 rounded-lg overflow-hidden focus-within:border-cyan-500">
+            <button id="btn-mic" onclick="iniciarDictado()" class="px-4 py-2 text-gray-400 hover:text-red-500 transition border-r border-gray-800">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <input type="text" id="main-search" placeholder="Escribe falla, código DTC, pinout o marca..." 
+                   class="w-full bg-transparent p-2 text-sm text-white focus:outline-none">
+            <button onclick="superBusqueda()" class="bg-blue-700 hover:bg-blue-600 px-6 py-2 text-xs font-bold transition">
+                <i class="fas fa-bolt mr-2"></i> ESCANEAR
+            </button>
         </div>
-        <button onclick="superBusqueda()" class="bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-600 hover:to-cyan-600 px-8 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2">
-            <i class="fas fa-search-plus"></i> ESCANEAR BASE
-        </button>
+
+        <div class="flex gap-2">
+            <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded text-xs font-bold border border-gray-600">
+                <i class="fas fa-file-pdf text-red-500 mr-1"></i> PDF / IMPRIMIR
+            </button>
+            <button onclick="compartirWhatsApp()" class="bg-gray-800 hover:bg-green-900 text-white px-3 py-2 rounded text-xs font-bold border border-gray-600">
+                <i class="fab fa-whatsapp text-green-500 mr-1"></i> ENVIAR WA
+            </button>
+        </div>
     </nav>
 
     <main class="flex-1 overflow-y-auto p-6 bg-slate-950">
-        <div id="idle-screen" class="h-full flex flex-col items-center justify-center text-gray-700">
-            <i class="fas fa-network-wired text-8xl mb-6 opacity-10"></i>
-            <p class="font-tech text-2xl tracking-tighter opacity-30">ESPERANDO ORDEN DEL COMANDANTE MILLÁN</p>
+        <div id="idle-screen" class="h-full flex flex-col items-center justify-center text-gray-800">
+            <i class="fas fa-projector text-9xl mb-4 opacity-10"></i>
+            <h2 class="font-tech text-xl opacity-20 tracking-widest">SISTEMA CONECTADO A GITHUB</h2>
         </div>
 
         <div id="output-report" class="hidden">
@@ -55,12 +72,12 @@
                 <div class="flex justify-between border-b-4 border-black pb-4 mb-6">
                     <div>
                         <h2 class="text-4xl font-black tracking-tighter">REPORT <span class="text-red-700">P.P.S.</span></h2>
-                        <p class="text-xs font-bold text-gray-600">REFACCIONARIA Y TALLER ELÉCTRICO MILLÁN</p>
+                        <p class="text-[10px] font-bold text-gray-600 italic">SERVICIO TÉCNICO ESPECIALIZADO MILLÁN</p>
                     </div>
-                    <div class="text-right text-xs">
+                    <div class="text-right text-[10px]">
                         <p><strong>FECHA:</strong> <span id="current-date"></span></p>
-                        <p><strong>UBICACIÓN:</strong> CUERNAVACA, MOR.</p>
-                        <p><strong>TEL:</strong> 777 683 81 96</p>
+                        <p><strong>WA:</strong> 777 683 81 96</p>
+                        <p><strong>LOC:</strong> Cuernavaca, Morelos</p>
                     </div>
                 </div>
 
@@ -69,55 +86,127 @@
 
                 <div class="absolute bottom-10 left-10 right-10 flex justify-between items-end border-t border-gray-300 pt-4">
                     <div class="text-center">
-                        <p style="font-family: 'Brush Script MT', cursive; font-size: 30px;" class="text-blue-800">Fernando Millán</p>
+                        <p style="font-family: 'Brush Script MT', cursive; font-size: 32px;" class="text-blue-800 mb-[-10px]">Fernando Millán</p>
                         <div class="w-48 border-t border-black mx-auto"></div>
-                        <p class="text-[10px] font-bold">FIRMA AUTORIZADA</p>
+                        <p class="text-[9px] font-bold uppercase tracking-widest mt-1">Firma del Director Técnico</p>
                     </div>
-                    <p class="text-[9px] text-gray-400">Software Pro Part System v2.5 - Conectado a Repositorio GitHub</p>
+                    <p class="text-[8px] text-gray-400">Pro Part System v4.0 - Base de Datos Master 2TB</p>
                 </div>
             </div>
         </div>
     </main>
-    
+
     <script>
-    // ESTOS SON LOS ENLACES CORREGIDOS (FORMATO RAW)
-    const RAW_MASTER = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/master_data.json";
-    const RAW_DIAG = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/diagn%C3%B3sticos.json";
+        // CONFIGURACIÓN DE LINKS (FORMATO RAW OBLIGATORIO)
+        const RAW_MASTER = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/master_data.json";
+        const RAW_DIAG = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/diagn%C3%B3sticos.json";
 
-    let db_master = [];
-    let db_diag = [];
+        let db_master = [];
+        let db_diag = [];
 
-    async function conectarBases() {
-        const masterStatus = document.getElementById('status-master');
-        const diagStatus = document.getElementById('status-diag');
+        // CONECTOR DE CEREBROS
+        async function conectarBases() {
+            const masterLight = document.getElementById('status-master');
+            const diagLight = document.getElementById('status-diag');
+            const timeToken = "?t=" + new Date().getTime();
 
-        // Intento 1: Master Data
-        try {
-            const res1 = await fetch(RAW_MASTER + '?v=' + Math.random());
-            if (!res1.ok) throw new Error();
-            db_master = await res1.json();
-            masterStatus.className = "text-[10px] text-green-500 font-bold";
-            masterStatus.innerHTML = '<i class="fas fa-check-circle"></i> MASTER OK';
-        } catch (e) {
-            masterStatus.className = "text-[10px] text-red-500 font-bold";
-            masterStatus.innerHTML = '<i class="fas fa-times-circle"></i> MASTER ERROR';
+            // Cargar Master Data
+            try {
+                const resM = await fetch(RAW_MASTER + timeToken);
+                if (!resM.ok) throw new Error();
+                db_master = await resM.json();
+                masterLight.className = "text-[10px] text-green-500 font-bold";
+                masterLight.innerHTML = '<i class="fas fa-check-circle"></i> MASTER OK';
+            } catch (e) {
+                masterLight.className = "text-[10px] text-red-500 font-bold";
+                masterLight.innerHTML = '<i class="fas fa-times-circle"></i> MASTER ERROR';
+            }
+
+            // Cargar Diagnósticos
+            try {
+                const resD = await fetch(RAW_DIAG + timeToken);
+                if (!resD.ok) throw new Error();
+                db_diag = await resD.json();
+                diagLight.className = "text-[10px] text-green-500 font-bold";
+                diagLight.innerHTML = '<i class="fas fa-check-circle"></i> DIAG OK';
+            } catch (e) {
+                diagLight.className = "text-[10px] text-red-500 font-bold";
+                diagLight.innerHTML = '<i class="fas fa-times-circle"></i> DIAG ERROR';
+            }
         }
 
-        // Intento 2: Diagnósticos
-        try {
-            const res2 = await fetch(RAW_DIAG + '?v=' + Math.random());
-            if (!res2.ok) throw new Error();
-            db_diag = await res2.json();
-            diagStatus.className = "text-[10px] text-green-500 font-bold";
-            diagStatus.innerHTML = '<i class="fas fa-check-circle"></i> DIAG OK';
-        } catch (e) {
-            diagStatus.className = "text-[10px] text-red-500 font-bold";
-            diagStatus.innerHTML = '<i class="fas fa-times-circle"></i> DIAG ERROR';
-        }
-    }
+        // BÚSQUEDA UNIFICADA
+        function superBusqueda() {
+            const q = document.getElementById('main-search').value.toLowerCase();
+            if(!q) return;
 
-    // Llamar a la conexión inmediatamente
-    conectarBases();
+            document.getElementById('idle-screen').classList.add('hidden');
+            document.getElementById('output-report').classList.remove('hidden');
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString();
+
+            const mMatch = db_master.filter(i => Object.values(i).some(v => String(v).toLowerCase().includes(q)));
+            const dMatch = db_diag.filter(i => Object.values(i).some(v => String(v).toLowerCase().includes(q)));
+
+            renderTodo(mMatch, dMatch);
+        }
+
+        function renderTodo(m, d) {
+            const area = document.getElementById('render-area');
+            let h = "";
+
+            if(m.length === 0 && d.length === 0) {
+                h = `<div class="p-20 text-center opacity-40"><i class="fas fa-search-minus text-6xl mb-4"></i><p class="font-bold">SIN RESULTADOS EN EL REPOSITORIO</p></div>`;
+            }
+
+            if(d.length > 0) {
+                h += `<div class="mb-8"><span class="tag-diag">MODULO DE DIAGNÓSTICO PROFESIONAL</span>`;
+                d.forEach(x => {
+                    h += `<div class="mt-2 p-5 bg-red-50 border-l-8 border-red-700 rounded shadow-sm">
+                            <h4 class="font-black text-red-900 text-xl uppercase mb-1">${x.falla || 'Anomalía Detectada'}</h4>
+                            <p class="text-sm"><strong>SÍNTOMA:</strong> ${x.sintoma || 'N/A'}</p>
+                            <p class="text-sm mt-1 bg-white p-2 border border-red-200"><strong>SOLUCIÓN MILLÁN:</strong> <span class="text-green-800 font-bold">${x.solucion || 'Revisar físicamente'}</span></p>
+                          </div>`;
+                });
+                h += `</div>`;
+            }
+
+            if(m.length > 0) {
+                h += `<div><span class="tag-master">PINOUTS Y DATOS DE COMPONENTES</span>`;
+                m.forEach(x => {
+                    h += `<div class="mt-2 p-4 border border-gray-200 rounded grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+                            <div class="col-span-2 bg-blue-900 text-white p-1 px-3 font-bold flex justify-between uppercase">
+                                <span>${x.componente}</span> <span>${x.sistema}</span>
+                            </div>
+                            <div class="border-b"><strong>PIN:</strong> <span class="text-red-600 font-bold">${x.pin || '-'}</span></div>
+                            <div class="border-b"><strong>COLOR:</strong> ${x.color || '-'}</div>
+                            <div class="border-b"><strong>RUTA ORIGEN:</strong> ${x.ruta_origen || '-'}</div>
+                            <div class="border-b"><strong>PRUEBA/VOLTAJE:</strong> ${x.prueba || '-'}</div>
+                          </div>`;
+                });
+                h += `</div>`;
+            }
+            area.innerHTML = h;
+        }
+
+        // FUNCIONES EXTRA
+        function iniciarDictado() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+            const rec = new SpeechRecognition();
+            rec.lang = 'es-MX';
+            rec.onstart = () => document.getElementById('btn-mic').classList.add('mic-active');
+            rec.onresult = (e) => { document.getElementById('main-search').value = e.results[0][0].transcript; superBusqueda(); };
+            rec.onend = () => document.getElementById('btn-mic').classList.remove('mic-active');
+            rec.start();
+        }
+
+        function compartirWhatsApp() {
+            const text = encodeURIComponent("¡Hola! Te comparto el diagnóstico oficial de PRO PART SYSTEM.");
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        // ARRANQUE DE SISTEMA
+        conectarBases();
     </script>
 </body>
-</html>
+</html>un
