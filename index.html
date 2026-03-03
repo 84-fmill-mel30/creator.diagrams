@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRO PART SYSTEM - DRIVE UNIFIED V8</title>
+    <title>PRO PART SYSTEM V12 - ARNES MAESTRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -14,112 +14,184 @@
             background: white; color: black; width: 100%; max-width: 900px; min-height: 1100px; 
             box-shadow: 0 0 50px rgba(6, 182, 212, 0.3); margin: 20px auto; padding: 45px; position: relative;
         }
-        .btn-drive { background: #107c10; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-drive:hover { background: #159d15; transform: scale(1.05); }
-        @media print { .no-print { display: none !important; } .hoja-pdf { box-shadow: none; margin: 0; } }
+        .btn-ui { background: #1e293b; border: 1px solid #334155; padding: 8px 16px; font-size: 11px; font-weight: 800; border-radius: 6px; transition: 0.3s; color: white; text-transform: uppercase; }
+        .btn-active { background: #1d4ed8 !important; border-color: #60a5fa !important; box-shadow: 0 0 15px rgba(29, 78, 216, 0.5); }
+        .mic-active { color: #ff0000 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        @media print { .no-print { display: none !important; } .hoja-pdf { box-shadow: none; margin: 0; width: 100%; } }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <header class="bg-[#010409] border-b border-blue-900 p-3 flex justify-between items-center z-20 no-print">
-        <div class="flex items-center gap-3">
-            <i class="fas fa-network-wired text-cyan-400 text-3xl"></i>
+    <header class="bg-[#010409] border-b border-blue-900 p-4 flex justify-between items-center z-20 no-print">
+        <div class="flex items-center gap-4">
+            <i class="fas fa-atom text-cyan-400 text-4xl"></i>
             <div>
-                <h1 class="font-tech text-xl font-bold text-white tracking-widest uppercase">PRO PART <span class="text-red-600">SYSTEM</span></h1>
-                <p class="text-[10px] text-gray-400 font-bold uppercase">Buscador Unificado: GitHub + Drive</p>
+                <h1 class="font-tech text-2xl font-bold text-white tracking-widest uppercase italic">PRO PART <span class="text-red-600">SYSTEM</span></h1>
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">DIRECTOR TÉCNICO: FERNANDO MILLÁN</p>
             </div>
         </div>
-        <div class="text-[10px] text-green-500 font-bold"><i class="fas fa-shield-check"></i> CONEXIÓN SEGURA</div>
+        <div class="flex items-center gap-2">
+            <div class="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
+            <span class="text-[10px] font-bold text-green-500 font-tech uppercase">Sistema V12 Full Online</span>
+        </div>
     </header>
 
-    <nav class="bg-[#0d1117] border-b border-gray-800 p-3 flex flex-col gap-3 shadow-2xl no-print">
-        <div class="flex gap-3">
-            <div class="flex-1 flex items-center bg-gray-900 border border-blue-900/50 rounded-lg overflow-hidden">
-                <input type="text" id="main-search" placeholder="Escribe: Alternador, Hilux, Sentra..." class="w-full bg-transparent p-3 text-sm text-white focus:outline-none">
-                <button onclick="superBusqueda()" class="bg-blue-700 hover:bg-blue-600 px-8 py-2 font-bold transition"><i class="fas fa-search"></i></button>
+    <nav class="bg-[#0d1117] border-b border-gray-800 p-4 flex flex-col gap-4 shadow-2xl no-print">
+        <div class="flex gap-4">
+            <div class="flex-1 flex items-center bg-gray-900 border border-blue-900/50 rounded-xl overflow-hidden shadow-inner">
+                <button onclick="activarMicrofono()" id="btn-mic" class="px-5 py-3 text-gray-500 hover:text-red-500 transition border-r border-gray-800">
+                    <i class="fas fa-microphone text-xl"></i>
+                </button>
+                <input type="text" id="main-search" onkeyup="if(event.key==='Enter') superBusqueda()" placeholder="ESCANEAR VEHÍCULO, PIEZA O FALLA..." class="w-full bg-transparent p-4 text-sm text-white focus:outline-none font-bold uppercase tracking-wider">
+                <button onclick="superBusqueda()" class="bg-blue-700 hover:bg-blue-600 px-10 py-3 font-black text-white transition italic">ESCANEAR</button>
             </div>
+            <button onclick="enviarWA()" class="bg-green-700 hover:bg-green-600 px-6 rounded-xl font-bold text-white transition flex items-center gap-2">
+                <i class="fab fa-whatsapp text-xl"></i> WA
+            </button>
+            <button onclick="window.print()" class="bg-red-700 hover:bg-red-600 px-6 rounded-xl font-bold text-white transition flex items-center gap-2">
+                <i class="fas fa-print text-xl"></i> PDF
+            </button>
         </div>
         
-        <div class="flex gap-2 justify-center bg-slate-900/50 p-2 rounded-lg">
-            <button onclick="setVista('normal')" class="text-[10px] bg-slate-800 px-4 py-1 rounded border border-slate-600">NORMAL</button>
-            <button onclick="setVista('ampliado')" class="text-[10px] bg-slate-800 px-4 py-1 rounded border border-slate-600">AMPLIADO</button>
-            <button onclick="setVista('diagramas')" class="text-[10px] bg-slate-800 px-4 py-1 rounded border border-slate-600">DIAGRAMAS</button>
+        <div class="flex gap-3 justify-center">
+            <button id="v-normal" onclick="cambiarVista('normal')" class="btn-ui btn-active">Vista Normal</button>
+            <button id="v-ampliado" onclick="cambiarVista('ampliado')" class="btn-ui">Info Extendida</button>
+            <button id="v-diagramas" onclick="cambiarVista('diagramas')" class="btn-ui">Solo Diagramas</button>
+            <button onclick="abrirDrive()" class="btn-ui bg-green-900/50 border-green-600 hover:bg-green-800"><i class="fab fa-google-drive mr-2"></i>Buscar en Drive</button>
         </div>
     </nav>
 
-    <main class="flex-1 p-6 bg-slate-950 overflow-y-auto">
-        <div id="drive-helper" class="hidden mb-6 text-center no-print">
-            <p class="text-xs text-gray-400 mb-2 font-bold uppercase italic">¿No es suficiente? Busca en tus manuales personales:</p>
-            <button id="drive-link-btn" onclick="buscarEnDrive()" class="btn-drive shadow-lg">
-                <i class="fab fa-google-drive"></i> BUSCAR "<span id="search-term-display"></span>" EN MI DRIVE
-            </button>
-        </div>
-
-        <div id="output-report" class="hidden">
+    <main class="flex-1 p-6 bg-[#05080f] overflow-y-auto">
+        <div id="wrapper-reporte" class="hidden">
             <div class="hoja-pdf">
-                <div id="render-area"></div>
+                <div class="flex justify-between border-b-[6px] border-black pb-6 mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-black text-white p-2 font-tech font-black text-3xl italic">PPS</div>
+                        <div>
+                            <h2 class="text-4xl font-black tracking-tighter uppercase italic">REPORT <span class="text-red-700">MASTER</span></h2>
+                            <p class="text-[11px] font-black text-gray-500 tracking-widest">PRO PART SYSTEM - TECNOLOGÍA AUTOMOTRIZ</p>
+                        </div>
+                    </div>
+                    <div class="text-right text-[11px] font-bold leading-tight">
+                        <p>FERNANDO MILLÁN</p>
+                        <p>WA: 777 683 81 96</p>
+                        <p>FECHA: <span id="span-fecha"></span></p>
+                    </div>
+                </div>
+
+                <div id="area-datos"></div>
+
+                <div class="mt-24 border-t-2 border-gray-200 pt-8 flex justify-between items-end">
+                    <div class="text-center">
+                        <p style="font-family: 'Brush Script MT', cursive; font-size: 38px;" class="text-blue-900 mb-[-10px]">Fernando Millán</p>
+                        <div class="w-56 border-t-2 border-black mx-auto"></div>
+                        <p class="text-[10px] font-black uppercase mt-2 tracking-[0.3em]">Firma del Especialista</p>
+                    </div>
+                    <div class="text-right opacity-30 font-tech text-[8px]">
+                        PRO PART SYSTEM V12 / MASTER DB 2TB
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
     <script>
-        const RAW_MASTER = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/master_data.json";
-        let db = [];
-        let vistaActual = 'normal';
+        const URL_DB = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/master_data.json";
+        let base_completa = [];
+        let modo_vista = 'normal';
 
-        async function cargar() {
+        async function sincronizar() {
             try {
-                const res = await fetch(RAW_MASTER + '?v=' + Date.now());
-                db = await res.json();
-            } catch (e) { console.log("Error de carga"); }
+                const r = await fetch(URL_DB + '?v=' + Date.now());
+                base_completa = await r.json();
+            } catch (e) { console.error("Fallo de enlace a base"); }
         }
 
-        function buscarEnDrive() {
-            const q = document.getElementById('main-search').value;
-            // Abre una pestaña nueva buscando en tu Drive
-            window.open(`https://drive.google.com/drive/search?q=${encodeURIComponent(q)}`, '_blank');
+        function cambiarVista(m) {
+            modo_vista = m;
+            document.querySelectorAll('.btn-ui').forEach(b => b.classList.remove('btn-active'));
+            document.getElementById('v-' + m).classList.add('btn-active');
+            superBusqueda();
         }
 
         function superBusqueda() {
-            const q = document.getElementById('main-search').value.toLowerCase();
-            if(!q) return;
+            const busqueda = document.getElementById('main-search').value.toLowerCase();
+            if(!busqueda) return;
 
-            // Mostrar el ayudante de Drive
-            document.getElementById('drive-helper').classList.remove('hidden');
-            document.getElementById('search-term-display').innerText = q.toUpperCase();
-            document.getElementById('output-report').classList.remove('hidden');
+            document.getElementById('wrapper-reporte').classList.remove('hidden');
+            document.getElementById('span-fecha').innerText = new Date().toLocaleDateString();
 
-            const lista = db.filter(i => JSON.stringify(i).toLowerCase().includes(q));
-            render(lista);
+            // EL FILTRO MAESTRO: Barre cada columna del JSON hasta el infinito
+            const filtrados = base_completa.filter(item => {
+                return Object.values(item).some(valor => 
+                    String(valor).toLowerCase().includes(busqueda)
+                );
+            });
+            
+            imprimirResultados(filtrados);
         }
 
-        function setVista(v) { vistaActual = v; superBusqueda(); }
+        function imprimirResultados(datos) {
+            const area = document.getElementById('area-datos');
+            let html = "";
 
-        function render(lista) {
-            const area = document.getElementById('render-area');
-            let h = "";
-            if(lista.length === 0) {
-                h = `<div class="p-10 text-center">
-                        <i class="fas fa-search-minus text-4xl text-gray-300 mb-4"></i>
-                        <h2 class="text-xl font-bold">Sin resultados en la Base Master</h2>
-                        <p class="text-sm text-gray-500">Usa el botón verde de arriba para buscar en tu Drive personal.</p>
-                     </div>`;
+            if(datos.length === 0) {
+                html = `<div class="p-20 text-center uppercase font-black text-gray-400 border-2 border-dashed border-gray-200">Dato no localizado en base Master. Use botón Drive.</div>`;
             } else {
-                lista.forEach(i => {
-                    h += `<div class="mb-10 border-b pb-6">
-                        <h3 class="text-2xl font-black text-blue-900">${i.marca || ''} ${i.modelo || ''}</h3>
-                        <div class="${vistaActual === 'diagramas' ? 'hidden' : 'grid'} grid-cols-2 gap-2 mt-4 text-xs">
-                            <div class="bg-gray-100 p-2"><strong>COMPONENTE:</strong> ${i.componente || i.name || 'N/A'}</div>
-                            <div class="bg-gray-100 p-2"><strong>PINOUT:</strong> ${i.pin || i.n || 'N/A'}</div>
+                datos.forEach(i => {
+                    if(modo_vista === 'diagramas' && !i.diagrama) return;
+
+                    html += `
+                    <div class="mb-12 border-b-2 border-gray-100 pb-8 page-break">
+                        <div class="flex justify-between items-center bg-slate-900 text-white p-3 mb-6">
+                            <h3 class="text-2xl font-black uppercase italic tracking-tighter">${i.marca || ''} ${i.modelo || i.vehiculo || ''}</h3>
+                            <span class="font-tech text-xs text-cyan-400">${i.sistema || 'GENÉRICO'}</span>
                         </div>
-                        ${i.diagrama ? `<img src="${i.diagrama}" class="w-full mt-4 border shadow-md">` : ''}
+                        
+                        <div class="${modo_vista === 'diagramas' ? 'hidden' : 'grid'} grid-cols-2 gap-x-12 gap-y-4 text-sm mb-6 px-4">
+                            <div class="border-b border-gray-100 pb-1 uppercase"><strong>Componente:</strong> <span class="float-right font-bold">${i.componente || i.modulo || i.name || '-'}</span></div>
+                            <div class="border-b border-gray-100 pb-1 uppercase"><strong>Pinout:</strong> <span class="float-right text-red-700 font-black text-lg">${i.pin || i.n || '-'}</span></div>
+                            <div class="border-b border-gray-100 pb-1 uppercase"><strong>Prueba/Val:</strong> <span class="float-right font-bold text-blue-800">${i.prueba || i.v || '-'}</span></div>
+                            <div class="border-b border-gray-100 pb-1 uppercase"><strong>Color:</strong> <span class="float-right font-bold">${i.color || '-'}</span></div>
+                        </div>
+
+                        ${(modo_vista === 'ampliado' || modo_vista === 'normal') && i.tip_pro ? `
+                            <div class="mx-4 p-4 bg-yellow-50 border-l-[6px] border-yellow-400 text-sm italic font-medium text-gray-800 shadow-sm">
+                                <i class="fas fa-lightbulb text-yellow-600 mr-2"></i><strong>ANÁLISIS PROFESIONAL:</strong> ${i.tip_pro}
+                            </div>
+                        ` : ''}
+
+                        ${i.diagrama ? `
+                            <div class="mt-8 px-4">
+                                <p class="text-[10px] font-black uppercase mb-2 text-gray-400">Diagrama / Imagen de Referencia:</p>
+                                <img src="${i.diagrama}" class="w-full border-2 border-gray-200 rounded shadow-md" onerror="this.style.display='none'">
+                            </div>
+                        ` : ''}
                     </div>`;
                 });
             }
-            area.innerHTML = h;
+            area.innerHTML = html;
         }
 
-        cargar();
+        function activarMicrofono() {
+            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!Speech) return alert("Navegador no soporta voz");
+            const reconocimiento = new Speech();
+            reconocimiento.lang = 'es-MX';
+            reconocimiento.onstart = () => document.getElementById('btn-mic').classList.add('mic-active');
+            reconocimiento.onresult = (e) => { 
+                document.getElementById('main-search').value = e.results[0][0].transcript; 
+                superBusqueda(); 
+            };
+            reconocimiento.onend = () => document.getElementById('btn-mic').classList.remove('mic-active');
+            reconocimiento.start();
+        }
+
+        function abrirDrive() { window.open(`https://drive.google.com/drive/search?q=${encodeURIComponent(document.getElementById('main-search').value)}`, '_blank'); }
+        function enviarWA() { window.open(`https://wa.me/?text=${encodeURIComponent('Reporte PRO PART: ' + document.getElementById('main-search').value)}`, '_blank'); }
+
+        sincronizar();
     </script>
 </body>
 </html>
