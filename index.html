@@ -1,197 +1,654 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRO PART SYSTEM V12 - ARNES MAESTRO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700;900&display=swap');
-        body { font-family: 'Roboto', sans-serif; background-color: #05080f; color: #f0f6fc; }
-        .font-tech { font-family: 'Orbitron', sans-serif; }
-        .hoja-pdf { 
-            background: white; color: black; width: 100%; max-width: 900px; min-height: 1100px; 
-            box-shadow: 0 0 50px rgba(6, 182, 212, 0.3); margin: 20px auto; padding: 45px; position: relative;
-        }
-        .btn-ui { background: #1e293b; border: 1px solid #334155; padding: 8px 16px; font-size: 11px; font-weight: 800; border-radius: 6px; transition: 0.3s; color: white; text-transform: uppercase; }
-        .btn-active { background: #1d4ed8 !important; border-color: #60a5fa !important; box-shadow: 0 0 15px rgba(29, 78, 216, 0.5); }
-        .mic-active { color: #ff0000 !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-        @media print { .no-print { display: none !important; } .hoja-pdf { box-shadow: none; margin: 0; width: 100%; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRO PART SYSTEM V12 — Base Datos Millán</title>
+<style>
+:root {
+  --bg:#010409; --bg2:#0d1117; --bg3:#161b22; --bg4:#21262d;
+  --border:#30363d; --border2:#21262d;
+  --text:#e6edf3; --muted:#8b949e;
+  --blue:#58a6ff; --green:#2ea043; --green2:#238636;
+  --yellow:#f7b733; --red:#f56565; --orange:#ffa657; --purple:#b794f4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
+
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;flex-wrap:wrap;}
+.logo{font-size:26px;}
+.htitle{font-size:16px;font-weight:800;letter-spacing:.5px;}
+.hsub{font-size:11px;color:var(--muted);}
+.hbtns{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;}
+
+.btn{border:none;border-radius:8px;padding:8px 15px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn:hover{opacity:.82;transform:translateY(-1px);}
+.btn-primary{background:linear-gradient(135deg,var(--green2),var(--green));color:#fff;}
+.btn-ghost{background:var(--bg4);color:var(--text);border:1px solid var(--border);}
+.btn-yellow{background:#3d2e10;color:var(--yellow);border:1px solid #7d5a1466;}
+.btn-blue{background:#0d2137;color:var(--blue);border:1px solid #1e3a5f66;}
+
+.main{max-width:920px;margin:0 auto;padding:22px 14px 60px;}
+.card{background:var(--bg3);border-radius:13px;padding:20px;border:1px solid var(--border);margin-bottom:14px;}
+.ctitle{font-size:11px;color:var(--blue);font-weight:700;letter-spacing:1px;margin-bottom:13px;}
+
+/* UPLOAD */
+.drop{border:2px dashed var(--border);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg2);}
+.drop:hover,.drop.drag{border-color:var(--blue);background:#0d1f35;}
+.drop input{display:none;}
+
+/* STATS */
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:13px;}
+.stat{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:11px 15px;flex:1;min-width:90px;text-align:center;}
+.snum{font-size:21px;font-weight:800;color:var(--blue);}
+.slbl{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* FILTROS */
+.filters{display:flex;gap:9px;flex-wrap:wrap;}
+.fg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px;}
+.flbl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;}
+select,input[type=text]{background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;width:100%;transition:border-color .2s;}
+select:focus,input:focus{border-color:var(--blue);}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border2);margin-bottom:14px;overflow-x:auto;gap:0;}
+.tab{padding:10px 15px;border:none;background:none;cursor:pointer;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;transition:.15s;font-weight:500;}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:700;}
+
+/* CARDS REGISTROS */
+.rec-grid{display:grid;gap:11px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));}
+.rec{background:var(--bg2);border-radius:11px;border:1px solid var(--border2);padding:16px;transition:.2s;cursor:default;}
+.rec:hover{border-color:var(--blue);box-shadow:0 0 16px #58a6ff18;}
+.rec-marca{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:4px;}
+.rec-modelo{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.rec-sistema{font-size:12px;color:var(--blue);margin-bottom:10px;}
+.rec-comp{font-size:13px;color:var(--orange);font-weight:600;margin-bottom:8px;}
+.rec-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;font-size:12px;}
+.rec-key{color:var(--muted);min-width:60px;flex-shrink:0;}
+.rec-val{color:var(--text);}
+.tip-box{background:#3d2e1044;border:1px solid #7d5a1444;border-radius:7px;padding:9px 11px;margin-top:10px;font-size:12px;color:var(--yellow);line-height:1.5;}
+.tip-icon{margin-right:4px;}
+
+/* TABLE */
+.twrap{overflow-x:auto;border-radius:9px;border:1px solid var(--border2);}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead tr{background:var(--bg2);}
+th{padding:9px 13px;text-align:left;color:var(--muted);font-size:10px;letter-spacing:1px;border-bottom:1px solid var(--border2);white-space:nowrap;}
+td{padding:8px 13px;border-bottom:1px solid #21262d44;vertical-align:top;}
+tbody tr:hover{background:var(--bg4);}
+tbody tr:last-child td{border-bottom:none;}
+
+/* BADGE */
+.badge{border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;display:inline-block;white-space:nowrap;}
+.bg-blue{background:#1f3a5f;color:var(--blue);border:1px solid #1e3a5f;}
+.bg-green{background:#14301e;color:#48bb78;border:1px solid #276749;}
+.bg-yellow{background:#3d2e10;color:var(--yellow);border:1px solid #7d5a14;}
+.bg-red{background:#3d1414;color:var(--red);border:1px solid #7d2020;}
+.bg-orange{background:#3d2810;color:var(--orange);border:1px solid #7d4e14;}
+.bg-purple{background:#2d1f5e;color:var(--purple);border:1px solid #553c9a;}
+.bg-muted{background:var(--bg4);color:var(--muted);border:1px solid var(--border);}
+
+/* COLOR CHIP */
+.chip{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:middle;margin-right:5px;border:1px solid #ffffff22;}
+
+/* DIAGRAMA */
+.diag-wrap{background:var(--bg2);border-radius:11px;border:1px solid var(--border);overflow:hidden;}
+
+/* REPORTE */
+.rep-hdr{background:linear-gradient(135deg,#0d2137,#0a1628);border-radius:12px;padding:22px;margin-bottom:13px;border:1px solid #1e3a5f44;}
+
+.empty{text-align:center;padding:56px 20px;color:var(--muted);}
+.search-wrap{position:relative;}
+.search-wrap input{padding-left:34px;}
+.sico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fade{animation:fadeIn .3s ease forwards;}
+
+@media print{
+  .header .hbtns,.drop,.filters,.tabs,#uploadCard,#statsRow,.rep-hdr .badge{display:none!important;}
+  body{background:#fff;color:#000;}
+  .card,.rec{border:1px solid #ddd;background:#fff;}
+}
+</style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body>
 
-    <header class="bg-[#010409] border-b border-blue-900 p-4 flex justify-between items-center z-20 no-print">
-        <div class="flex items-center gap-4">
-            <i class="fas fa-atom text-cyan-400 text-4xl"></i>
-            <div>
-                <h1 class="font-tech text-2xl font-bold text-white tracking-widest uppercase italic">PRO PART <span class="text-red-600">SYSTEM</span></h1>
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">DIRECTOR TÉCNICO: FERNANDO MILLÁN</p>
-            </div>
+<div class="header">
+  <div class="logo">🔧</div>
+  <div>
+    <div class="htitle">PRO PART SYSTEM V12</div>
+    <div class="hsub">DIRECTOR TÉCNICO: FERNANDO MILLÁN · 777-683-8196 · Alpuyeca, Morelos</div>
+  </div>
+  <div class="hbtns">
+    <button class="btn btn-ghost" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="btn btn-ghost" onclick="exportarJSON()">💾 Exportar</button>
+    <button class="btn btn-ghost" onclick="window.open('https://wa.me/527776838196')">📲 WA</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- CARGA -->
+  <div class="card" id="uploadCard">
+    <div class="ctitle">CARGAR BASE DE DATOS</div>
+    <div class="drop" id="dropZone" onclick="document.getElementById('fi').click()">
+      <input type="file" id="fi" accept=".json,.csv" multiple>
+      <div style="font-size:40px;margin-bottom:12px">📂</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:5px">Arrastra o toca para cargar</div>
+      <div style="color:var(--muted);font-size:12px">Acepta tu archivo JSON (base_datos_master) o CSV (Nissan_Millan.csv)</div>
+      <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <span class="badge bg-green">✅ JSON</span>
+        <span class="badge bg-blue">✅ CSV</span>
+        <span class="badge bg-muted">Múltiples archivos</span>
+      </div>
+    </div>
+    <div id="filesLoaded" style="display:none;margin-top:12px;display:none">
+      <div class="ctitle">ARCHIVOS CARGADOS</div>
+      <div id="fileChips" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats" id="statsRow" style="display:none">
+    <div class="stat"><div class="snum" id="sTot">0</div><div class="slbl">REGISTROS</div></div>
+    <div class="stat"><div class="snum" id="sMar">0</div><div class="slbl">MARCAS</div></div>
+    <div class="stat"><div class="snum" id="sMod">0</div><div class="slbl">MODELOS</div></div>
+    <div class="stat"><div class="snum" id="sSis">0</div><div class="slbl">SISTEMAS</div></div>
+    <div class="stat"><div class="snum" id="sComp">0</div><div class="slbl">COMPONENTES</div></div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="card" id="filCard" style="display:none">
+    <div class="ctitle">SELECCIÓN DE VEHÍCULO / SISTEMA</div>
+    <div class="filters" style="margin-bottom:10px">
+      <div class="fg">
+        <div class="flbl">MARCA</div>
+        <select id="sMarca" onchange="filtrar()"><option value="">— Todas —</option></select>
+      </div>
+      <div class="fg">
+        <div class="flbl">MODELO</div>
+        <select id="sModelo" onchange="filtrar()"><option value="">— Todos —</option></select>
+      </div>
+      <div class="fg">
+        <div class="flbl">SISTEMA / ECU</div>
+        <select id="sSistema" onchange="filtrar()"><option value="">— Todos —</option></select>
+      </div>
+    </div>
+    <div class="filters">
+      <div class="fg" style="flex:2">
+        <div class="flbl">BUSCAR (componente, pin, tip...)</div>
+        <div class="search-wrap"><span class="sico">🔍</span><input type="text" id="sSearch" placeholder="Ej: inyector, CKP, 5V, riel..." oninput="filtrar()"></div>
+      </div>
+      <div class="fg" style="flex:none;align-self:flex-end">
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-ghost" id="vCards" onclick="setVista('cards')" style="font-size:12px">🃏 Tarjetas</button>
+          <button class="btn btn-ghost" id="vTable" onclick="setVista('tabla')" style="font-size:12px">📋 Tabla</button>
+          <button class="btn btn-ghost" id="vDiag" onclick="setVista('diag')" style="font-size:12px">📐 Diagrama</button>
         </div>
-        <div class="flex items-center gap-2">
-            <div class="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
-            <span class="text-[10px] font-bold text-green-500 font-tech uppercase">Sistema V12 Full Online</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div id="res" style="display:none">
+
+    <div class="rep-hdr" id="repHdr"></div>
+
+    <!-- TABS MARCAS -->
+    <div class="tabs" id="tabsMarcas"></div>
+
+    <!-- VISTA CARDS -->
+    <div id="vistaCards" class="rec-grid"></div>
+
+    <!-- VISTA TABLA -->
+    <div class="card" id="vistaTabla" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div class="ctitle" style="margin:0" id="tblTitle">REGISTROS</div>
+        <div style="color:var(--muted);font-size:12px" id="tblCount"></div>
+      </div>
+      <div class="twrap">
+        <table>
+          <thead>
+            <tr>
+              <th>MARCA</th><th>MODELO</th><th>SISTEMA</th><th>COMPONENTE</th>
+              <th>PIN</th><th>COLOR</th><th>PRUEBA</th><th>RUTA</th><th>TIP PRO 🔑</th>
+            </tr>
+          </thead>
+          <tbody id="tblBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VISTA DIAGRAMA -->
+    <div class="card" id="vistaDiag" style="display:none">
+      <div class="ctitle">DIAGRAMA DE RUTAS ELÉCTRICAS</div>
+      <div class="diag-wrap"><svg id="svgDiag" width="100%" viewBox="0 0 820 400" style="background:#0d1117;display:block"></svg></div>
+      <div style="color:var(--muted);font-size:11px;text-align:center;margin-top:9px">Generado automáticamente desde tu base de datos · Toca para detalles</div>
+    </div>
+
+  </div>
+
+  <div class="empty" id="emptyMsg">
+    <div style="font-size:44px;margin-bottom:14px">🔧</div>
+    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px">PRO PART SYSTEM V12</div>
+    <div style="font-size:13px">Carga tu base de datos JSON o CSV para comenzar</div>
+    <div style="margin-top:16px">
+      <button class="btn btn-primary" onclick="cargarDemo()">▶ Ver demo con datos reales</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────────────────────────────────────
+// BASE DE DATOS REAL DE FER (cargada del archivo subido)
+// ──────────────────────────────────────────────────────────────────────────────
+const BASE_REAL = [
+  {"marca":"CHEVROLET","modelo":"S10 1989","sistema":"SWITCH IGNICION","componente":"PASTILLA DE ENCENDIDO","pin":"ROSA (IGN), MORADO (START)","color":"Rosa, Morado, Café, Rojo","ruta_origen":"BATERIA DIRECTO","ruta_destino":"TABLERO Y MARCHA","prueba":"12V EN POSICION ON","tip_pro":"Si el rosa no tiene corriente, la pastilla está quemada."},
+  {"marca":"NISSAN","modelo":"D21 2002","sistema":"FUSILERA / ECU","componente":"ALIMENTACION PRINCIPAL","pin":"PIN 1, PIN 2, PIN 5","color":"Blanco, Rojo/Blanco","ruta_origen":"FUSIBLE 10A CABINA","ruta_destino":"ECU / BOMBA","prueba":"12V CON SWITCH","tip_pro":"Checa el fusible de 10A en cabina para la señal IGN."},
+  {"marca":"FORD","modelo":"F-150 / RANGER (97-03)","sistema":"GEM / ECU 104 PINES","componente":"PCM ALIMENTACION","pin":"PIN 24, PIN 25, PIN 91","color":"Blanco/Azul, Negro/Naranja","ruta_origen":"FUSIBLE 21 COFRE (20A)","ruta_destino":"PCM / SENSORES","prueba":"5V REF EN PIN 91","tip_pro":"Si no hay comunicación, checa el fusible 21 del cofre (20A)."},
+  {"marca":"CHRYSLER","modelo":"VOYAGER / RAM (96-00)","sistema":"PCM","componente":"CONTROL DE RELEVADOR ASD","pin":"A11, A12, A20, C3","color":"Rojo/Blanco, Negro/Blanco","ruta_origen":"RELEVADOR ASD","ruta_destino":"BOBINA / SENSORES","prueba":"TIERRA EN PIN A12","tip_pro":"Falla común: El relevador ASD se corta si el sensor de cigüeñal está en corto."},
+  {"marca":"ISUZU","modelo":"ELF 400/500 (DIESEL)","sistema":"ECM 4HK1","componente":"SINCRONIZACION CKP/CMP","pin":"121 (CKP), 122 (CMP)","color":"Verde/Blanco, Rojo/Amarillo","ruta_origen":"ARNES TRANSMISION","ruta_destino":"ECM CONECTOR GRIS","prueba":"SEÑAL DIGITAL 5V","tip_pro":"Si pierde potencia, checa el arnés sobre la transmisión; el roce con la lámina hace corto."},
+  {"marca":"CUMMINS","modelo":"ISX (CM871)","sistema":"ECM MOTOR","componente":"RED CAN BUS / ALIMENTACION","pin":"01 (B+), 20 (GND), 43/44 (CAN)","color":"Rojo, Negro, Amarillo, Verde","ruta_origen":"CAJA BATERIAS","ruta_destino":"ECM CHASIS","prueba":"60 OHMS ENTRE 43 Y 44","tip_pro":"Si no comunica, checa el fusible de 30A en la caja de baterías, suele sulfatarse."},
+  {"marca":"NISSAN","modelo":"TSURU B13","sistema":"HITACHI ECCS","componente":"SENSOR OPTICO DISTRIBUIDOR","pin":"22 (180), 31 (1)","color":"Amarillo/Verde","ruta_origen":"DISTRIBUIDOR","ruta_destino":"ECM PIN 22","prueba":"5V PULSANTE DIGITAL","tip_pro":"Si el Pin 22 no tiene señal, no hay pulsos de inyección. El aceite en el distribuidor ensucia el sensor."},
+  {"marca":"VW","modelo":"JETTA A4 2.0L","sistema":"BOSCH ME7.5","componente":"CUERPO ACELERACION EPC","pin":"CAN 75, MAF 25","color":"Diversos","ruta_origen":"FUSIBLE S43","ruta_destino":"CANAL 060 VAGCOM","prueba":"RESISTENCIA MOTOR TPS","tip_pro":"Si marca falla de EPC, limpia el cuerpo de aceleración y haz ajuste básico en canal 060."},
+  {"marca":"FREIGHTLINER","modelo":"CASCADIA M2","sistema":"SAM CAB","componente":"DISTRIBUCION ENERGIA","pin":"B1_A (IGN), C2_F (GND)","color":"Gris/Rojo","ruta_origen":"MODULO SAM CAB","ruta_destino":"ACCESORIOS CABINA","prueba":"CONTINUIDAD CONECTORES","tip_pro":"Si fallan limpiaparabrisas o luces, los conectores de la SAM CAB suelen aflojarse con la vibración."},
+  {"marca":"INTERNATIONAL","modelo":"4300 DT466E","sistema":"ECM MAXXFORCE","componente":"SENSOR ICP / VALVULA IPR","pin":"X2_15 (IAT), X3_10 (INJ1)","color":"Rojo/Azul","ruta_origen":"LINEA DE ACEITE ALTA","ruta_destino":"ECM PLASTICO","prueba":"DESCONECTAR ICP","tip_pro":"Si no arranca, desconecta el ICP; si arranca con valor sustituto, el sensor está dañado."},
+  {"marca":"DODGE","modelo":"NEON / STRATUS (01-05)","sistema":"PCM 4 CONECTORES","componente":"INYECTOR 1 / ALIMENTACION","pin":"C1_PIN_1 (B+), C2_PIN_32 (INJ)","color":"Rojo/Verde, Café/Amarillo","ruta_origen":"CONECTOR VERDE C1","ruta_destino":"PCM / INYECTORES","prueba":"12V CONSTANTE EN C1_PIN_1","tip_pro":"Checa el conector C1 si tienes fallas de alimentación total."},
+  {"marca":"TOYOTA","modelo":"HILUX / TACOMA 2.7L (05-15)","sistema":"ECU 1TR-FE","componente":"SENSOR CKP","pin":"NE+ (Negro), NE- (Blanco)","color":"Negro, Blanco","ruta_origen":"BOMBA DE ACEITE","ruta_destino":"ECU MOTOR","prueba":"SEÑAL AC EN MARCHA","tip_pro":"Si no hay pulso, checa el relé EFI en la caja del cofre."},
+  {"marca":"HONDA","modelo":"CIVIC 1.7L (01-05)","sistema":"PCM 4 CONECTORES","componente":"BOMBA GASOLINA / IGN","pin":"A15 (IGN), C18 (BOMBA)","color":"Amarillo/Negro, Verde/Amarillo","ruta_origen":"PCM BAJO TABLERO","ruta_destino":"BOMBA / RELÉ","prueba":"TIERRA EN C18 AL ABRIR SWITCH","tip_pro":"Ojo con el sensor CKP detrás de la polea; si le cae aceite se corta."},
+  {"marca":"MAZDA","modelo":"MAZDA 3 (04-09)","sistema":"PCM","componente":"CONTROL ALTERNADOR","pin":"PIN 23","color":"Blanco/Verde","ruta_origen":"PCM","ruta_destino":"REGULADOR ALTERNADOR","prueba":"SEÑAL PWM 5V","tip_pro":"El alternador es controlado por ECU. Si no carga, checa el cable antes de bajarlo."},
+  {"marca":"NISSAN","modelo":"NP300 DIESEL (YD25)","sistema":"ECM DENSO","componente":"SENSOR PRESION RIEL (FRP)","pin":"PIN 41","color":"Blanco","ruta_origen":"RIEL DE COMBUSTIBLE","ruta_destino":"ECM","prueba":"1.3V A 1.7V EN RALENTI","tip_pro":"Si no arranca y marca FRP, checa el conector del riel; suele derretirse."},
+  {"marca":"MITSUBISHI","modelo":"L200 DIESEL (06-14)","sistema":"ECM 4D56","componente":"VALVULA SCV","pin":"C_112","color":"Azul/Rojo","ruta_origen":"BOMBA DE ALTA","ruta_destino":"ECM","prueba":"2.1 - 2.4 OHMS","tip_pro":"Si el ralentí es inestable (P0089), limpia la SCV antes de cambiarla."},
+  {"marca":"NISSAN","modelo":"SENTRA B14","sistema":"NATS","componente":"INMOVILIZADOR","pin":"8, 9","color":"Blanco/Negro","ruta_origen":"ANTENA NATS","ruta_destino":"ECU","prueba":"5V","tip_pro":"Antena NATS bloquea inyectores si llave no está codificada."},
+  {"marca":"NISSAN","modelo":"SENTRA B15 1.8","sistema":"QG18","componente":"IAC VALVULA RALENTI","pin":"111","color":"Azul","ruta_origen":"ECU","ruta_destino":"IAC","prueba":"RESISTENCIA 10-14 OHMS","tip_pro":"IAC en corto quema el driver de la ECU. Medir antes de reemplazar ECU."},
+  {"marca":"NISSAN","modelo":"ALTIMA L31","sistema":"QR25","componente":"APP PEDAL ACELERADOR","pin":"VARIOS","color":"Gris, Verde","ruta_origen":"PEDAL","ruta_destino":"ECM","prueba":"VOLTAJE PROGRESIVO","tip_pro":"Los pines del conector del pedal se abren con el tiempo."},
+  {"marca":"NISSAN","modelo":"FRONTIER D22","sistema":"KA24 / VG33","componente":"SENSOR MAF","pin":"5 PINES","color":"Rojo, Negro, Verde, Azul, Amarillo","ruta_origen":"FILTRO AIRE","ruta_destino":"ECM","prueba":"1.0 - 1.7V EN RALENTI","tip_pro":"Falsos contactos en el arnés del MAF son falla muy común."},
+  {"marca":"CHEVROLET","modelo":"SILVERADO (14-19)","sistema":"E83","componente":"TIERRA G102","pin":"X1, X2","color":"Negro/Blanco","ruta_origen":"MOTOR TIERRA","ruta_destino":"CHASIS","prueba":"CONTINUIDAD A TIERRA","tip_pro":"Limpiar el poste G102 elimina muchos códigos U de comunicación."},
+  {"marca":"CHEVROLET","modelo":"AVEO (08-17)","sistema":"SIRIUS D42","componente":"RELE BOMBA GASOLINA","pin":"30 (ROSA)","color":"Rosa","ruta_origen":"FUSIBLE BOMBA","ruta_destino":"BOMBA / RELEVADOR","prueba":"12V EN PIN 30","tip_pro":"Pin 30 sin corriente = vehículo completamente muerto."},
+  {"marca":"FORD","modelo":"MUSTANG (15-20)","sistema":"COYOTE 5.0","componente":"LIMP MODE / THROTTLE","pin":"A12","color":"Gris/Amarillo","ruta_origen":"PCM","ruta_destino":"CUERPO ACELERACION","prueba":"VOLTAJE REFERENCIA","tip_pro":"Conector del cuerpo de aceleración falsea causando modo emergencia."},
+  {"marca":"JEEP","modelo":"GRAND CHEROKEE","sistema":"PENTASTAR 3.6","componente":"MISFIRE / ARNES","pin":"C2-33","color":"Rojo/Negro","ruta_origen":"COFRE","ruta_destino":"INYECTORES","prueba":"PULSO INYECTOR","tip_pro":"Arnés roza contra la base del filtro de aceite causando misfire."},
+  {"marca":"HINO","modelo":"300 / 500","sistema":"DENSO ECU","componente":"TPS PEDAL ACELERADOR","pin":"E10","color":"Verde/Blanco, Gris/Rojo","ruta_origen":"PEDAL","ruta_destino":"ECU","prueba":"0.5 - 4.5V","tip_pro":"Cable del TPS se troza en la base del pedal por vibración."},
+  {"marca":"RAM","modelo":"CUMMINS 6.7","sistema":"VGT TURBO","componente":"ACTUADOR TURBO","pin":"14","color":"Rojo/Azul","ruta_origen":"ECM","ruta_destino":"TURBO VGT","prueba":"SEÑAL PWM","tip_pro":"Cable del VGT se tuesta por el calor del escape. Proteger con manguera térmica."},
+  {"marca":"FORD","modelo":"POWERSTROKE 6.7","sistema":"EGT","componente":"SENSOR TEMP ESCAPE","pin":"C2-55","color":"Rojo/Negro","ruta_origen":"ESCAPE","ruta_destino":"PCM","prueba":"TEMPERATURA REFERENCIA","tip_pro":"EGT 12 y 13 en falla bloquean el arranque del motor."},
+  {"marca":"MERCEDES","modelo":"SPRINTER DIESEL","sistema":"EDC16 / EDC17","componente":"SENSOR PRESION TURBO","pin":"15","color":"Verde/Amarillo","ruta_origen":"TURBO","ruta_destino":"ECM","prueba":"0.5 - 4.5V","tip_pro":"Carbonilla del EGR tapa el sensor de turbo causando pérdida de potencia."},
+  {"marca":"FORD","modelo":"TRANSIT 2.2 DIESEL","sistema":"DIESEL ECU","componente":"SENSOR CKP","pin":"C5","color":"Gris/Rojo","ruta_origen":"VOLANTE MOTOR","ruta_destino":"ECU","prueba":"PULSO AC","tip_pro":"La vibración del motor corta el cable del CKP justo en la abrazadera del filtro de aceite."},
+  {"marca":"VW","modelo":"JETTA 1.4 TSI","sistema":"WASTEGATE TURBO","componente":"ACTUADOR WASTEGATE","pin":"60","color":"Azul/Verde","ruta_origen":"ECU","ruta_destino":"TURBO","prueba":"AJUSTE BASICO CANAL","tip_pro":"Lubrica la varilla del wastegate. Si está agarrotada, el turbo no regula bien."},
+  {"marca":"HYUNDAI/KIA","modelo":"TUCSON / SPORTAGE","sistema":"GDI 2.0 / 2.4","componente":"INYECTOR GDI","pin":"78, 79","color":"Azul/Rojo","ruta_origen":"ECU","ruta_destino":"INYECTORES ALTA PRESION","prueba":"100V PULSO ALTA PRESION","tip_pro":"NUNCA usar lámpara de prueba en sistema GDI. El voltaje es de 100V y daña el scanner."}
+];
+
+// ──────────────────────────────────────────────────────────────────────────────
+let allData = [];
+let filtered = [];
+let vistaActual = 'cards';
+let marcaTab = '';
+
+const MARCA_COLORS = {
+  'NISSAN':'#c53030','CHEVROLET':'#d69e2e','FORD':'#3182ce','VW':'#553c9a',
+  'TOYOTA':'#2f855a','HONDA':'#c05621','CHRYSLER':'#702459','DODGE':'#2c5282',
+  'MAZDA':'#2d3748','ISUZU':'#276749','CUMMINS':'#7b341e','MITSUBISHI':'#1a365d',
+  'FREIGHTLINER':'#4a5568','INTERNATIONAL':'#744210','HINO':'#2d3748',
+  'RAM':'#7b341e','FORD':'#3182ce','MERCEDES':'#1a202c','HYUNDAI/KIA':'#0d2137',
+  'JEEP':'#276749','DEFAULT':'#2d3748'
+};
+
+function getMarcaColor(m) { return MARCA_COLORS[m] || MARCA_COLORS.DEFAULT; }
+
+// Color cable → hex
+const CABLE_HEX = {
+  'rosa':     '#ed64a6','pink':'#ed64a6',
+  'rojo':     '#e53e3e','red':'#e53e3e',
+  'azul':     '#3182ce','blue':'#3182ce',
+  'verde':    '#38a169','green':'#38a169',
+  'amarillo': '#d69e2e','yellow':'#d69e2e',
+  'blanco':   '#cbd5e0','white':'#cbd5e0',
+  'negro':    '#4a5568','black':'#4a5568',
+  'cafe':     '#c05621','brown':'#c05621','marrón':'#c05621',
+  'naranja':  '#ed8936','orange':'#ed8936',
+  'morado':   '#9f7aea','purple':'#9f7aea','violeta':'#9f7aea',
+  'gris':     '#a0aec0','grey':'#a0aec0','gray':'#a0aec0',
+};
+
+function colorChip(colorStr) {
+  if (!colorStr) return '';
+  const first = colorStr.split(/[,\/\s]/)[0].toLowerCase().trim();
+  const hex = CABLE_HEX[first] || '#718096';
+  return `<span class="chip" style="background:${hex};box-shadow:0 0 5px ${hex}88"></span>`;
+}
+
+// ── CARGAR ARCHIVOS ────────────────────────────────────────────────────────
+document.getElementById('fi').addEventListener('change', e => loadFiles(e.target.files));
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); loadFiles(e.dataTransfer.files); });
+
+function loadFiles(files) {
+  const promises = [...files].map(f => new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => res({ name: f.name, text: e.target.result });
+    r.readAsText(f, 'utf-8');
+  }));
+  Promise.all(promises).then(results => {
+    let newData = [];
+    const chips = document.getElementById('fileChips');
+    chips.innerHTML = '';
+    results.forEach(r => {
+      let rows = [];
+      if (r.name.endsWith('.json')) rows = parseJSON(r.text);
+      else rows = parseCSV(r.text);
+      newData = newData.concat(rows);
+      chips.innerHTML += `<span class="badge bg-green" style="font-size:12px;padding:5px 11px">✅ ${r.name} (${rows.length})</span>`;
+    });
+    allData = newData;
+    document.getElementById('filesLoaded').style.display = 'block';
+    iniciar();
+  });
+}
+
+function parseJSON(text) {
+  try {
+    let data = JSON.parse(text);
+    // Aplanar arrays anidados
+    const flat = [];
+    function walk(v) {
+      if (Array.isArray(v)) v.forEach(walk);
+      else if (v && typeof v === 'object' && v.marca) flat.push(normalizar(v));
+    }
+    walk(data);
+    return flat;
+  } catch(e) { return []; }
+}
+
+function parseCSV(text) {
+  const lines = text.split('\n').filter(l => l.trim());
+  let headers = null;
+  const rows = [];
+  for (const line of lines) {
+    const cells = splitCSV(line);
+    if (!headers) {
+      const up = cells.map(c => c.toUpperCase().trim());
+      if (up.includes('MARCA') || up.includes('PIN')) {
+        headers = up;
+        continue;
+      }
+      headers = ['MARCA','MODELO','SISTEMA','COMPONENTE','PIN','COLOR','RUTA_ORIGEN','RUTA_DESTINO','PRUEBA','TIP_PRO'];
+    }
+    const row = {};
+    headers.forEach((h, i) => row[h] = (cells[i] || '').trim());
+    if (row.MARCA && (row.PIN || row.COMPONENTE)) rows.push(normalizar(row));
+  }
+  return rows;
+}
+
+function splitCSV(line) {
+  const r = []; let cur = '', q = false;
+  for (const ch of line) {
+    if (ch === '"') { q = !q; continue; }
+    if (ch === ',' && !q) { r.push(cur); cur = ''; continue; }
+    cur += ch;
+  }
+  r.push(cur);
+  return r;
+}
+
+function normalizar(r) {
+  return {
+    marca:       (r.marca || r.MARCA || '').toUpperCase().trim(),
+    modelo:      r.modelo || r.MODELO || r['MODELO_AÑO'] || r.MODELO_ANO || '',
+    sistema:     r.sistema || r.SISTEMA || r.MODULO || '',
+    componente:  r.componente || r.COMPONENTE || r.FUNCION || '',
+    pin:         r.pin || r.PIN || '',
+    color:       r.color || r.COLOR || r.COLOR_CABLE || '',
+    ruta_origen: r.ruta_origen || r.RUTA_ORIGEN || '',
+    ruta_destino:r.ruta_destino || r.RUTA_DESTINO || '',
+    prueba:      r.prueba || r.PRUEBA || r.VOLTAJE || '',
+    tip_pro:     r.tip_pro || r.TIP_PRO || r.NOTAS || '',
+  };
+}
+
+function cargarDemo() {
+  allData = BASE_REAL.map(normalizar);
+  iniciar();
+  document.getElementById('uploadCard').style.display = 'none';
+}
+
+function iniciar() {
+  document.getElementById('statsRow').style.display = 'flex';
+  document.getElementById('filCard').style.display = 'block';
+  document.getElementById('emptyMsg').style.display = 'none';
+  actualizarStats();
+  popularFiltros();
+  filtrar();
+}
+
+function actualizarStats() {
+  document.getElementById('sTot').textContent = allData.length;
+  document.getElementById('sMar').textContent = new Set(allData.map(r=>r.marca)).size;
+  document.getElementById('sMod').textContent = new Set(allData.map(r=>r.modelo)).size;
+  document.getElementById('sSis').textContent = new Set(allData.map(r=>r.sistema)).size;
+  document.getElementById('sComp').textContent = new Set(allData.map(r=>r.componente)).size;
+}
+
+// ── FILTROS ────────────────────────────────────────────────────────────────
+function popularFiltros() {
+  const marcas = [...new Set(allData.map(r=>r.marca).filter(Boolean))].sort();
+  const modelos = [...new Set(allData.map(r=>r.modelo).filter(Boolean))].sort();
+  const sistemas = [...new Set(allData.map(r=>r.sistema).filter(Boolean))].sort();
+  fill('sMarca', marcas);
+  fill('sModelo', modelos);
+  fill('sSistema', sistemas);
+}
+
+function fill(id, opts) {
+  const sel = document.getElementById(id);
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">— Todos —</option>';
+  opts.forEach(o => sel.innerHTML += `<option${o===prev?' selected':''}>${o}</option>`);
+}
+
+function filtrar() {
+  const m = document.getElementById('sMarca').value;
+  const mo = document.getElementById('sModelo').value;
+  const s = document.getElementById('sSistema').value;
+  const q = document.getElementById('sSearch').value.toLowerCase();
+  filtered = allData.filter(r => {
+    if (m && r.marca !== m) return false;
+    if (mo && r.modelo !== mo) return false;
+    if (s && r.sistema !== s) return false;
+    if (q) {
+      const txt = Object.values(r).join(' ').toLowerCase();
+      if (!txt.includes(q)) return false;
+    }
+    return true;
+  });
+  marcaTab = '';
+  renderResultados();
+}
+
+// ── RENDER PRINCIPAL ──────────────────────────────────────────────────────
+function renderResultados() {
+  document.getElementById('res').style.display = 'block';
+  document.getElementById('res').className = 'fade';
+
+  // Header reporte
+  const m = document.getElementById('sMarca').value;
+  const mo = document.getElementById('sModelo').value;
+  const s = document.getElementById('sSistema').value;
+  const veh = [m, mo, s].filter(Boolean).join(' · ') || 'Todos los vehículos';
+  document.getElementById('repHdr').innerHTML = `
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <div style="font-size:38px">🚗</div>
+      <div style="flex:1">
+        <div style="font-size:19px;font-weight:800;color:var(--blue)">${veh}</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:3px">${filtered.length} registros · Base de datos Millán</div>
+        <div style="display:flex;gap:7px;margin-top:9px;flex-wrap:wrap">
+          <span class="badge bg-blue">📅 ${new Date().toLocaleDateString('es-MX')}</span>
+          <span class="badge bg-green">${filtered.length} REGISTROS</span>
+          <span class="badge bg-yellow">🔧 Fernando Millán</span>
+          <span class="badge bg-muted">777-683-8196</span>
         </div>
-    </header>
+      </div>
+    </div>`;
 
-    <nav class="bg-[#0d1117] border-b border-gray-800 p-4 flex flex-col gap-4 shadow-2xl no-print">
-        <div class="flex gap-4">
-            <div class="flex-1 flex items-center bg-gray-900 border border-blue-900/50 rounded-xl overflow-hidden shadow-inner">
-                <button onclick="activarMicrofono()" id="btn-mic" class="px-5 py-3 text-gray-500 hover:text-red-500 transition border-r border-gray-800">
-                    <i class="fas fa-microphone text-xl"></i>
-                </button>
-                <input type="text" id="main-search" onkeyup="if(event.key==='Enter') superBusqueda()" placeholder="ESCANEAR VEHÍCULO, PIEZA O FALLA..." class="w-full bg-transparent p-4 text-sm text-white focus:outline-none font-bold uppercase tracking-wider">
-                <button onclick="superBusqueda()" class="bg-blue-700 hover:bg-blue-600 px-10 py-3 font-black text-white transition italic">ESCANEAR</button>
-            </div>
-            <button onclick="enviarWA()" class="bg-green-700 hover:bg-green-600 px-6 rounded-xl font-bold text-white transition flex items-center gap-2">
-                <i class="fab fa-whatsapp text-xl"></i> WA
-            </button>
-            <button onclick="window.print()" class="bg-red-700 hover:bg-red-600 px-6 rounded-xl font-bold text-white transition flex items-center gap-2">
-                <i class="fas fa-print text-xl"></i> PDF
-            </button>
-        </div>
-        
-        <div class="flex gap-3 justify-center">
-            <button id="v-normal" onclick="cambiarVista('normal')" class="btn-ui btn-active">Vista Normal</button>
-            <button id="v-ampliado" onclick="cambiarVista('ampliado')" class="btn-ui">Info Extendida</button>
-            <button id="v-diagramas" onclick="cambiarVista('diagramas')" class="btn-ui">Solo Diagramas</button>
-            <button onclick="abrirDrive()" class="btn-ui bg-green-900/50 border-green-600 hover:bg-green-800"><i class="fab fa-google-drive mr-2"></i>Buscar en Drive</button>
-        </div>
-    </nav>
+  // Tabs por marca
+  const marcas = [...new Set(filtered.map(r=>r.marca).filter(Boolean))].sort();
+  const tabsEl = document.getElementById('tabsMarcas');
+  tabsEl.innerHTML = `<button class="tab${marcaTab===''?' active':''}" onclick="setMarcaTab('',this)">📋 Todas (${filtered.length})</button>`;
+  marcas.forEach(ma => {
+    const cnt = filtered.filter(r=>r.marca===ma).length;
+    const col = getMarcaColor(ma);
+    tabsEl.innerHTML += `<button class="tab${marcaTab===ma?' active':''}" onclick="setMarcaTab('${ma}',this)" style="color:${marcaTab===ma?col:''}">${ma} <span style="color:var(--muted);font-size:10px">(${cnt})</span></button>`;
+  });
 
-    <main class="flex-1 p-6 bg-[#05080f] overflow-y-auto">
-        <div id="wrapper-reporte" class="hidden">
-            <div class="hoja-pdf">
-                <div class="flex justify-between border-b-[6px] border-black pb-6 mb-8">
-                    <div class="flex items-center gap-4">
-                        <div class="bg-black text-white p-2 font-tech font-black text-3xl italic">PPS</div>
-                        <div>
-                            <h2 class="text-4xl font-black tracking-tighter uppercase italic">REPORT <span class="text-red-700">MASTER</span></h2>
-                            <p class="text-[11px] font-black text-gray-500 tracking-widest">PRO PART SYSTEM - TECNOLOGÍA AUTOMOTRIZ</p>
-                        </div>
-                    </div>
-                    <div class="text-right text-[11px] font-bold leading-tight">
-                        <p>FERNANDO MILLÁN</p>
-                        <p>WA: 777 683 81 96</p>
-                        <p>FECHA: <span id="span-fecha"></span></p>
-                    </div>
-                </div>
+  render();
+}
 
-                <div id="area-datos"></div>
+function setMarcaTab(ma, btn) {
+  marcaTab = ma;
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
 
-                <div class="mt-24 border-t-2 border-gray-200 pt-8 flex justify-between items-end">
-                    <div class="text-center">
-                        <p style="font-family: 'Brush Script MT', cursive; font-size: 38px;" class="text-blue-900 mb-[-10px]">Fernando Millán</p>
-                        <div class="w-56 border-t-2 border-black mx-auto"></div>
-                        <p class="text-[10px] font-black uppercase mt-2 tracking-[0.3em]">Firma del Especialista</p>
-                    </div>
-                    <div class="text-right opacity-30 font-tech text-[8px]">
-                        PRO PART SYSTEM V12 / MASTER DB 2TB
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+function render() {
+  const data = marcaTab ? filtered.filter(r=>r.marca===marcaTab) : filtered;
+  if (vistaActual === 'cards') renderCards(data);
+  else if (vistaActual === 'tabla') renderTabla(data);
+  else renderDiagrama(data);
+}
 
-    <script>
-        const URL_DB = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/master_data.json";
-        let base_completa = [];
-        let modo_vista = 'normal';
+// ── VISTA CARDS ────────────────────────────────────────────────────────────
+function renderCards(data) {
+  document.getElementById('vistaCards').style.display = 'grid';
+  document.getElementById('vistaTabla').style.display = 'none';
+  document.getElementById('vistaDiag').style.display = 'none';
 
-        async function sincronizar() {
-            try {
-                const r = await fetch(URL_DB + '?v=' + Date.now());
-                base_completa = await r.json();
-            } catch (e) { console.error("Fallo de enlace a base"); }
-        }
+  if (data.length === 0) {
+    document.getElementById('vistaCards').innerHTML = '<div class="empty" style="grid-column:1/-1"><div style="font-size:32px">🔍</div><div style="margin-top:10px">Sin resultados con estos filtros</div></div>';
+    return;
+  }
 
-        function cambiarVista(m) {
-            modo_vista = m;
-            document.querySelectorAll('.btn-ui').forEach(b => b.classList.remove('btn-active'));
-            document.getElementById('v-' + m).classList.add('btn-active');
-            superBusqueda();
-        }
+  document.getElementById('vistaCards').innerHTML = data.map(r => {
+    const col = getMarcaColor(r.marca);
+    return `
+    <div class="rec">
+      <div class="rec-marca" style="color:${col}">${r.marca}</div>
+      <div class="rec-modelo">${r.modelo}</div>
+      <div class="rec-sistema">${r.sistema}</div>
+      <div class="rec-comp">⚡ ${r.componente}</div>
+      ${r.pin ? `<div class="rec-row"><span class="rec-key">🔌 PIN:</span><span class="rec-val" style="font-family:monospace;color:var(--yellow)">${r.pin}</span></div>` : ''}
+      ${r.color ? `<div class="rec-row"><span class="rec-key">🎨 Color:</span><span class="rec-val">${colorChip(r.color)}${r.color}</span></div>` : ''}
+      ${r.ruta_origen ? `<div class="rec-row"><span class="rec-key">📍 Origen:</span><span class="rec-val">${r.ruta_origen}</span></div>` : ''}
+      ${r.ruta_destino ? `<div class="rec-row"><span class="rec-key">🎯 Destino:</span><span class="rec-val">${r.ruta_destino}</span></div>` : ''}
+      ${r.prueba ? `<div class="rec-row"><span class="rec-key">🔬 Prueba:</span><span class="rec-val" style="color:#68d391;font-family:monospace;font-size:11px">${r.prueba}</span></div>` : ''}
+      ${r.tip_pro ? `<div class="tip-box"><span class="tip-icon">💡</span>${r.tip_pro}</div>` : ''}
+    </div>`;
+  }).join('');
+}
 
-        function superBusqueda() {
-            const busqueda = document.getElementById('main-search').value.toLowerCase();
-            if(!busqueda) return;
+// ── VISTA TABLA ────────────────────────────────────────────────────────────
+function renderTabla(data) {
+  document.getElementById('vistaCards').style.display = 'none';
+  document.getElementById('vistaTabla').style.display = 'block';
+  document.getElementById('vistaDiag').style.display = 'none';
+  document.getElementById('tblCount').textContent = `${data.length} registros`;
 
-            document.getElementById('wrapper-reporte').classList.remove('hidden');
-            document.getElementById('span-fecha').innerText = new Date().toLocaleDateString();
+  if (data.length === 0) {
+    document.getElementById('tblBody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:36px;color:var(--muted)">Sin resultados</td></tr>`;
+    return;
+  }
 
-            // EL FILTRO MAESTRO: Barre cada columna del JSON hasta el infinito
-            const filtrados = base_completa.filter(item => {
-                return Object.values(item).some(valor => 
-                    String(valor).toLowerCase().includes(busqueda)
-                );
-            });
-            
-            imprimirResultados(filtrados);
-        }
+  document.getElementById('tblBody').innerHTML = data.map(r => {
+    const col = getMarcaColor(r.marca);
+    return `<tr>
+      <td><span class="badge" style="background:${col}22;color:${col};border:1px solid ${col}44">${r.marca}</span></td>
+      <td style="font-size:12px">${r.modelo}</td>
+      <td style="color:var(--blue);font-size:11px">${r.sistema}</td>
+      <td style="color:var(--orange);font-weight:600;font-size:12px">${r.componente}</td>
+      <td style="font-family:monospace;color:var(--yellow);font-size:11px">${r.pin}</td>
+      <td>${colorChip(r.color)}<span style="font-size:11px;color:var(--muted)">${r.color}</span></td>
+      <td style="color:#68d391;font-family:monospace;font-size:11px">${r.prueba}</td>
+      <td style="font-size:11px;color:var(--muted)">${r.ruta_origen}→${r.ruta_destino}</td>
+      <td style="color:var(--yellow);font-size:11px;max-width:200px">💡 ${r.tip_pro}</td>
+    </tr>`;
+  }).join('');
+}
 
-        function imprimirResultados(datos) {
-            const area = document.getElementById('area-datos');
-            let html = "";
+// ── VISTA DIAGRAMA ─────────────────────────────────────────────────────────
+function renderDiagrama(data) {
+  document.getElementById('vistaCards').style.display = 'none';
+  document.getElementById('vistaTabla').style.display = 'none';
+  document.getElementById('vistaDiag').style.display = 'block';
 
-            if(datos.length === 0) {
-                html = `<div class="p-20 text-center uppercase font-black text-gray-400 border-2 border-dashed border-gray-200">Dato no localizado en base Master. Use botón Drive.</div>`;
-            } else {
-                datos.forEach(i => {
-                    if(modo_vista === 'diagramas' && !i.diagrama) return;
+  const svg = document.getElementById('svgDiag');
+  const items = data.slice(0, 16);
+  const W = 820, H = 400;
+  const cols = 2, rows = Math.ceil(items.length / cols);
+  const cw = W / cols, rh = (H - 60) / Math.max(rows, 1);
 
-                    html += `
-                    <div class="mb-12 border-b-2 border-gray-100 pb-8 page-break">
-                        <div class="flex justify-between items-center bg-slate-900 text-white p-3 mb-6">
-                            <h3 class="text-2xl font-black uppercase italic tracking-tighter">${i.marca || ''} ${i.modelo || i.vehiculo || ''}</h3>
-                            <span class="font-tech text-xs text-cyan-400">${i.sistema || 'GENÉRICO'}</span>
-                        </div>
-                        
-                        <div class="${modo_vista === 'diagramas' ? 'hidden' : 'grid'} grid-cols-2 gap-x-12 gap-y-4 text-sm mb-6 px-4">
-                            <div class="border-b border-gray-100 pb-1 uppercase"><strong>Componente:</strong> <span class="float-right font-bold">${i.componente || i.modulo || i.name || '-'}</span></div>
-                            <div class="border-b border-gray-100 pb-1 uppercase"><strong>Pinout:</strong> <span class="float-right text-red-700 font-black text-lg">${i.pin || i.n || '-'}</span></div>
-                            <div class="border-b border-gray-100 pb-1 uppercase"><strong>Prueba/Val:</strong> <span class="float-right font-bold text-blue-800">${i.prueba || i.v || '-'}</span></div>
-                            <div class="border-b border-gray-100 pb-1 uppercase"><strong>Color:</strong> <span class="float-right font-bold">${i.color || '-'}</span></div>
-                        </div>
+  let html = `<defs><filter id="g"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  html += `<text x="${W/2}" y="22" text-anchor="middle" fill="#58a6ff" font-size="13" font-weight="bold" font-family="monospace">DIAGRAMA DE RUTAS — ${data.length} REGISTROS</text>`;
 
-                        ${(modo_vista === 'ampliado' || modo_vista === 'normal') && i.tip_pro ? `
-                            <div class="mx-4 p-4 bg-yellow-50 border-l-[6px] border-yellow-400 text-sm italic font-medium text-gray-800 shadow-sm">
-                                <i class="fas fa-lightbulb text-yellow-600 mr-2"></i><strong>ANÁLISIS PROFESIONAL:</strong> ${i.tip_pro}
-                            </div>
-                        ` : ''}
+  items.forEach((r, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = col * cw + 20;
+    const y = 40 + row * rh;
+    const mc = getMarcaColor(r.marca);
+    const bw = cw - 40, bh = rh - 14;
 
-                        ${i.diagrama ? `
-                            <div class="mt-8 px-4">
-                                <p class="text-[10px] font-black uppercase mb-2 text-gray-400">Diagrama / Imagen de Referencia:</p>
-                                <img src="${i.diagrama}" class="w-full border-2 border-gray-200 rounded shadow-md" onerror="this.style.display='none'">
-                            </div>
-                        ` : ''}
-                    </div>`;
-                });
-            }
-            area.innerHTML = html;
-        }
+    // Caja principal
+    html += `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="8" fill="#161b22" stroke="${mc}" stroke-width="1.5" opacity=".95"/>`;
+    // Barra de color marca
+    html += `<rect x="${x}" y="${y}" width="5" height="${bh}" rx="3" fill="${mc}"/>`;
+    // Marca
+    html += `<text x="${x+12}" y="${y+14}" fill="${mc}" font-size="9" font-weight="bold" font-family="monospace">${r.marca}</text>`;
+    // Modelo
+    html += `<text x="${x+12}" y="${y+26}" fill="#e6edf3" font-size="10" font-weight="600" font-family="sans-serif">${r.modelo.slice(0,28)}</text>`;
+    // Componente
+    html += `<text x="${x+12}" y="${y+39}" fill="#ffa657" font-size="9" font-family="sans-serif">${r.componente.slice(0,32)}</text>`;
+    // PIN
+    if (r.pin) html += `<text x="${x+12}" y="${y+51}" fill="#f7b733" font-size="8.5" font-family="monospace">PIN: ${r.pin.slice(0,30)}</text>`;
+    // Prueba
+    if (r.prueba) html += `<text x="${x+12}" y="${y+62}" fill="#68d391" font-size="8" font-family="monospace">${r.prueba.slice(0,36)}</text>`;
+    // Ruta flecha
+    if (r.ruta_origen && r.ruta_destino) {
+      html += `<text x="${x+12}" y="${y+73}" fill="#8b949e" font-size="7.5" font-family="sans-serif">${r.ruta_origen.slice(0,18)} → ${r.ruta_destino.slice(0,18)}</text>`;
+    }
+  });
 
-        function activarMicrofono() {
-            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if(!Speech) return alert("Navegador no soporta voz");
-            const reconocimiento = new Speech();
-            reconocimiento.lang = 'es-MX';
-            reconocimiento.onstart = () => document.getElementById('btn-mic').classList.add('mic-active');
-            reconocimiento.onresult = (e) => { 
-                document.getElementById('main-search').value = e.results[0][0].transcript; 
-                superBusqueda(); 
-            };
-            reconocimiento.onend = () => document.getElementById('btn-mic').classList.remove('mic-active');
-            reconocimiento.start();
-        }
+  if (data.length > 16) {
+    html += `<text x="${W/2}" y="${H-8}" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">... y ${data.length-16} registros más. Filtra para ver menos.</text>`;
+  }
 
-        function abrirDrive() { window.open(`https://drive.google.com/drive/search?q=${encodeURIComponent(document.getElementById('main-search').value)}`, '_blank'); }
-        function enviarWA() { window.open(`https://wa.me/?text=${encodeURIComponent('Reporte PRO PART: ' + document.getElementById('main-search').value)}`, '_blank'); }
+  svg.innerHTML = html;
+}
 
-        sincronizar();
-    </script>
+// ── VISTA TOGGLE ───────────────────────────────────────────────────────────
+function setVista(v) {
+  vistaActual = v;
+  ['vCards','vTable','vDiag'].forEach(id => document.getElementById(id).className = 'btn btn-ghost');
+  const mapa = {cards:'vCards', tabla:'vTable', diag:'vDiag'};
+  document.getElementById(mapa[v]).className = 'btn btn-blue';
+  render();
+}
+
+// ── EXPORT ─────────────────────────────────────────────────────────────────
+function exportarJSON() {
+  const data = marcaTab ? filtered.filter(r=>r.marca===marcaTab) : filtered;
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `propart_export_${Date.now()}.json`;
+  a.click();
+}
+
+// Init vista
+setVista('cards');
+</script>
 </body>
 </html>
