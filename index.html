@@ -1,180 +1,498 @@
+ 
+
+
+
+
+
+
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRO PART SYSTEM V14 - EL DIAGRAMADOR</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<html
+  lang="en"
+    class="html-auth"
+  
+  data-color-mode="auto" data-light-theme="light" data-dark-theme="dark"
+  data-a11y-animated-images="system" data-a11y-link-underlines="true"
+  
+  >
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700;900&display=swap');
-        body { font-family: 'Roboto', sans-serif; background-color: #05080f; color: #f0f6fc; overflow-x: hidden; }
-        .font-tech { font-family: 'Orbitron', sans-serif; }
-        .hoja-pdf { 
-            background: white; color: black; width: 100%; max-width: 900px; min-height: 1100px; 
-            box-shadow: 0 0 50px rgba(6, 182, 212, 0.3); margin: 20px auto; padding: 45px; position: relative;
-        }
-        /* ESTILO NEON CIAN QUE QUERÍAS */
-        .neon-border { border: 2px solid #06b6d4; box-shadow: 0 0 20px rgba(6, 182, 212, 0.3); }
-        .btn-ui { background: #1e293b; border: 1px solid #334155; padding: 8px 16px; font-size: 11px; font-weight: 800; border-radius: 6px; transition: 0.3s; color: white; text-transform: uppercase; }
-        .btn-active { background: #1d4ed8 !important; border-color: #60a5fa !important; box-shadow: 0 0 15px rgba(29, 78, 216, 0.5); }
-        .mic-active { color: #ff0000 !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        @media print { .no-print { display: none !important; } .hoja-pdf { box-shadow: none; margin: 0; width: 100%; } }
-    </style>
-</head>
-<body class="flex flex-col min-h-screen">
+:root {
+  --fontStack-monospace: "Monaspace Neon", ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important;
+}
+</style>
 
-    <header class="bg-[#010409] border-b border-blue-900 p-4 flex justify-between items-center z-20 no-print">
-        <div class="flex items-center gap-4">
-            <i class="fas fa-atom text-cyan-400 text-4xl shadow-md"></i>
-            <div>
-                <h1 class="font-tech text-2xl font-bold text-white tracking-widest uppercase italic">PRO PART <span class="text-red-600">SYSTEM</span></h1>
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">El Diagramador V14 - Fernando Millán</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-2">
-            <div id="led" class="h-3 w-3 rounded-full bg-red-600 animate-pulse"></div>
-            <span id="status-text" class="text-[10px] font-bold text-red-600 font-tech uppercase italic">Offline</span>
-        </div>
-    </header>
 
-    <nav class="bg-[#0d1117] border-b border-gray-800 p-4 flex flex-col gap-4 shadow-2xl no-print">
-        <div class="flex gap-4">
-            <div class="flex-1 flex items-center bg-gray-900 border border-blue-900/50 rounded-xl overflow-hidden shadow-inner">
-                <button onclick="activarMicrofono()" id="btn-mic" class="px-5 py-3 text-gray-500 hover:text-red-500 transition border-r border-gray-800">
-                    <i class="fas fa-microphone text-xl"></i>
-                </button>
-                <input type="text" id="main-search" onkeyup="if(event.key==='Enter') superBusqueda()" placeholder="ESCANEAR VEHÍCULO, PIEZA O FALLA..." class="w-full bg-transparent p-4 text-sm text-white focus:outline-none font-bold uppercase tracking-wider">
-                <button onclick="superBusqueda()" class="bg-blue-700 hover:bg-blue-600 px-10 py-3 font-black text-white transition italic">ESCANEAR</button>
-            </div>
-            <button onclick="enviarWA()" class="bg-green-700 hover:bg-green-600 px-6 rounded-xl font-bold text-white transition flex items-center gap-2">
-                <i class="fab fa-whatsapp text-xl"></i> WA
-            </button>
-            <button onclick="window.print()" class="bg-red-700 hover:bg-red-600 px-6 rounded-xl font-bold text-white transition flex items-center gap-2">
-                <i class="fas fa-print text-xl"></i> PDF
-            </button>
-        </div>
+
+
+  <head>
+    <meta charset="utf-8">
+  <link rel="dns-prefetch" href="https://github.githubassets.com">
+  <link rel="dns-prefetch" href="https://avatars.githubusercontent.com">
+  <link rel="dns-prefetch" href="https://github-cloud.s3.amazonaws.com">
+  <link rel="dns-prefetch" href="https://user-images.githubusercontent.com/">
+  <link rel="preconnect" href="https://github.githubassets.com" crossorigin>
+  <link rel="preconnect" href="https://avatars.githubusercontent.com">
+
+  
+
+  <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/light-0c8222dcd7a4f9b7.css" /><link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/dark-fc6eec18532c3ae0.css" /><link data-color-theme="light_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_high_contrast-51c0c6e0c085cc0f.css" /><link data-color-theme="light_colorblind" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_colorblind-4dd12c5689d6b012.css" /><link data-color-theme="light_colorblind_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_colorblind_high_contrast-dfa0c9e22ba6ba2b.css" /><link data-color-theme="light_tritanopia" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_tritanopia-9fd9c8859395d1a8.css" /><link data-color-theme="light_tritanopia_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_tritanopia_high_contrast-9c32304a2a8ac631.css" /><link data-color-theme="dark_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_high_contrast-96d7b2bab5a6ae4e.css" /><link data-color-theme="dark_colorblind" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_colorblind-0c6ca283d4d35cea.css" /><link data-color-theme="dark_colorblind_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_colorblind_high_contrast-2dc46b4919fae81e.css" /><link data-color-theme="dark_tritanopia" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_tritanopia-271332ec9362e8d3.css" /><link data-color-theme="dark_tritanopia_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_tritanopia_high_contrast-eb5bb84e91d6d553.css" /><link data-color-theme="dark_dimmed" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_dimmed-f3aa862f2ac7ead2.css" /><link data-color-theme="dark_dimmed_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_dimmed_high_contrast-206b6b93f856629b.css" />
+
+  <style type="text/css">
+    :root {
+      --tab-size-preference: 4;
+    }
+
+    pre, code {
+      tab-size: var(--tab-size-preference);
+    }
+  </style>
+
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-primitives-6da842159062d25e.css" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-9e07ff8eaaaff3a3.css" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/global-87aa887446e37f5c.css" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/github-6e7c458caf1e80bb.css" />
+  
+
+  
+
+  <script type="application/json" id="client-env">{"locale":"en","featureFlags":["a11y_status_checks_ruleset","actions_custom_images_public_preview_visibility","actions_custom_images_storage_billing_ui_visibility","actions_image_version_event","actions_workflow_language_service_allow_case_function","agent_session_retry_fetch_capi_on_401","alternate_user_config_repo","arianotify_comprehensive_migration","batch_suggested_changes","billing_ui_budget_pagination_enabled","cache_issue_labels","codeowners_validation_in_diff","codespaces_prebuild_region_target_update","coding_agent_model_selection","coding_agent_model_selection_all_skus","comments_panel_issue_comments","contentful_primer_code_blocks","copilot_3p_agent_hovercards","copilot_agent_image_upload","copilot_agent_snippy","copilot_agent_task_list_v2","copilot_agent_tasks_btn_code_nav","copilot_agent_tasks_btn_code_view","copilot_agent_tasks_btn_code_view_lines","copilot_agent_tasks_btn_repo","copilot_api_agentic_issue_marshal_yaml","copilot_ask_mode_dropdown","copilot_capi_error_response_telemetry","copilot_chat_attach_multiple_images","copilot_chat_clear_model_selection_for_default_change","copilot_chat_disable_model_picker_while_streaming","copilot_chat_enable_tool_call_logs","copilot_chat_file_redirect","copilot_chat_input_commands","copilot_chat_opening_thread_switch","copilot_chat_reduce_quota_checks","copilot_chat_repository_picker","copilot_chat_search_bar_redirect","copilot_chat_selection_attachments","copilot_chat_vision_in_claude","copilot_chat_vision_preview_gate","copilot_cli_install_cta","copilot_code_review_batch_apply_suggestions","copilot_coding_agent_free_users_exp","copilot_coding_agent_task_response","copilot_custom_copilots","copilot_custom_copilots_feature_preview","copilot_duplicate_thread","copilot_extensions_hide_in_dotcom_chat","copilot_extensions_removal_on_marketplace","copilot_features_sql_server_logo","copilot_features_zed_logo","copilot_file_block_ref_matching","copilot_ftp_hyperspace_upgrade_prompt","copilot_icebreakers_experiment_dashboard","copilot_icebreakers_experiment_hyperspace","copilot_immersive_embedded","copilot_immersive_job_result_preview","copilot_immersive_layout_routes","copilot_immersive_structured_model_picker","copilot_immersive_task_hyperlinking","copilot_immersive_task_within_chat_thread","copilot_issue_list_show_more","copilot_mc_cli_resume_any_users_task","copilot_mission_control_always_send_integration_id","copilot_mission_control_task_alive_updates","copilot_mission_control_use_task_name","copilot_org_policy_page_focus_mode","copilot_premium_request_quotas","copilot_redirect_header_button_to_agents","copilot_resource_panel","copilot_scroll_preview_tabs","copilot_share_active_subthread","copilot_spaces_ga","copilot_spaces_individual_policies_ga","copilot_spaces_pagination","copilot_spark_empty_state","copilot_spark_handle_nil_friendly_name","copilot_swe_agent_hide_model_picker_if_only_auto","copilot_swe_agent_pr_comment_model_picker","copilot_swe_agent_use_subagents","copilot_task_api_github_rest_style","copilot_unconfigured_is_inherited","copilot_usage_metrics_ga","copilot_workbench_slim_line_top_tabs","custom_instructions_file_references","custom_properties_consolidate_default_value_input","dashboard_indexeddb_caching","dashboard_lists_max_age_filter","dashboard_universe_2025","dashboard_universe_2025_feedback_dialog","dead_click_detection","disable_soft_navigate_turbo_visit","fgpat_permissions_selector_redesign","flex_cta_groups_mvp","github_models_scheduled_hydro_events","global_account_switch_dialog_lazy_load","global_agents_menu_lazy_load","global_create_menu_lazy_load","global_nav_menu_lazy_load","global_nav_react","global_user_menu_lazy_load","hide_groups_list_for_few_groups","hyperspace_2025_logged_out_batch_1","hyperspace_2025_logged_out_batch_2","hyperspace_2025_logged_out_batch_3","initial_per_page_pagination_updates","ipm_global_transactional_message_agents","ipm_global_transactional_message_copilot","ipm_global_transactional_message_issues","ipm_global_transactional_message_prs","ipm_global_transactional_message_repos","ipm_global_transactional_message_spaces","issue_fields_global_search","issue_fields_timeline_events","issues_cca_assign_actor_with_agent","issues_dashboard_inp_optimization","issues_dashboard_semantic_search","issues_diff_based_label_updates","issues_expanded_file_types","issues_index_semantic_search","issues_lazy_load_comment_box_suggestions","issues_react_auto_retry_on_error","issues_react_bots_timeline_pagination","issues_react_chrome_container_query_fix","issues_react_custom_hpc_metric","issues_react_hot_cache","issues_react_include_bots_in_pickers","issues_react_low_quality_comment_warning","issues_react_preheating_discussions","issues_react_preheating_notifications","issues_react_preheating_pulls","issues_react_prohibit_title_fallback","issues_react_resource_metrics","issues_react_safari_scroll_preservation","issues_react_ui_feedback","issues_react_use_turbo_for_cross_repo_navigation","issues_service_worker","landing_pages_ninetailed","landing_pages_web_vitals_tracking","lifecycle_label_name_updates","marketing_pages_search_explore_provider","memex_default_issue_create_repository","memex_grouped_by_edit_route","memex_live_update_hovercard","memex_mwl_filter_field_delimiter","memex_roadmap_drag_style","merge_status_header_feedback","mission_control_retry_on_401","mission_control_use_body_html","notifications_menu_defer_labels","nux_dashboard_refresh_scoped_portal","oauth_authorize_clickjacking_protection","open_agent_session_in_vscode_insiders","open_agent_session_in_vscode_stable","pr_sfv_new_diff_fetch","primer_react_css_has_selector_perf","primer_react_spinner_synchronize_animations","prs_checks_react","prs_conversations_react","prs_live_updates_issue_comments","prx_merge_status_button_alt_logic","pull_request_edit_button_redesign","pull_request_files_accurate_size_estimates","pull_request_files_virtualization","pull_request_merge_status_button","pull_request_virtualization_preload_diffs","react_blob_overlay","repository_suggester_elastic_search","ruleset_deletion_confirmation","sample_network_conn_type","secret_scanning_push_protection_exempt","session_logs_ungroup_reasoning_text","site_calculator_actions_2025","site_features_copilot_universe","site_homepage_collaborate_video","spark_prompt_secret_scanning","spark_server_connection_status","suppress_automated_browser_vitals","suppress_non_representative_vitals","viewscreen_sandbox","webp_support","workbench_store_readonly"],"login":"84-fmill-mel30","copilotApiOverrideUrl":"https://api.individual.githubcopilot.com"}</script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/wp-runtime-f0de390c1786ec68.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/28839-734cb6d8a7150172.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/85924-e131bec5f99667e1.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/34646-e68f26aaba7f2b0d.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/environment-990d83f9bff5b0e9.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/runtime-helpers-3bb6f7d6b7a2f531.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/2966-f6796bfd155feae1.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/96232-c2cf4a34762f0169.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/41013-7a6deee6d6ff15eb.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/51210-3abb7238871a5b29.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/24387-bc06b4d78bbcd753.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/81683-1370179bf9bdc0f0.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/46740-6606b1026a237412.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/81751-2c06efb98b9460b1.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/github-elements-21691d9353073fe5.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/element-registry-377dc04b8b45b524.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/react-core-017b3a88b81253a9.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/react-lib-a4cf89fce9a1300a.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/29434-47789cf97f381365.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/79039-2565b539a6ebc09b.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/61110-93cf7706e5dc8bfa.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/2887-47ac9a4b8862e6bf.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/26533-2961d590db2a09c3.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/62249-6514db80cf0cc26f.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/54195-ca6526f3483e6a6c.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/62988-af4811a8532026f8.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/60481-3c7a0fd2336c8106.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/46287-7b500b5354119a88.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/2498-7a413c8209222158.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/61075-6d5c1005b38602d6.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/89627-fc3955a85261a02a.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/49029-6c429c0e1bbd1e79.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/99328-5e06da57c4622e21.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/behaviors-7320c3a05a5a8a94.js" defer="defer"></script>
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/react-core.36c3e8b046fb98c7.module.css" />
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/38302-841b0fa97d5950a1.js" defer="defer"></script>
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/notifications-global-3413132b6df94f22.js" defer="defer"></script>
+  
+
+  <title>Verify two-factor authentication</title>
+
+
+
+  <meta name="route-pattern" content="/:user_id/:repository/raw/*name(/*path)" data-turbo-transient>
+  <meta name="route-controller" content="blob" data-turbo-transient>
+  <meta name="route-action" content="raw" data-turbo-transient>
+  <meta name="fetch-nonce" content="v2:41097683-0371-a498-7699-faf1cd6fe355">
+
+    
+  <meta name="current-catalog-service-hash" content="f3abb0cc802f3d7b95fc8762b94bdcb13bf39634c40c357301c4aa1d67a256fb">
+
+
+  <meta name="request-id" content="C53C:254601:469919:5FE37E:69B1F8AE" data-turbo-transient="true" /><meta name="html-safe-nonce" content="a6f5f095e64d97b12134a77b36a6fc46f444166bc335468497d4d60a853a5b89" data-turbo-transient="true" /><meta name="visitor-payload" content="eyJyZWZlcnJlciI6Imh0dHBzOi8vZ2l0aHViLmNvbS84NC1mbWlsbC1tZWwzMC9jcmVhdG9yLmRpYWdyYW1zL2Jsb2IvbWFpbi9pbmRleC5odG1sIiwicmVxdWVzdF9pZCI6IkM1M0M6MjU0NjAxOjQ2OTkxOTo1RkUzN0U6NjlCMUY4QUUiLCJ2aXNpdG9yX2lkIjoiMzMxMTYwNTI5OTUwODI1ODUwNyIsInJlZ2lvbl9lZGdlIjoiaWFkIiwicmVnaW9uX3JlbmRlciI6ImlhZCJ9" data-turbo-transient="true" /><meta name="visitor-hmac" content="3c267a7e996ddfe614be6e2c967e67031d34771f457f1706e2070b8d241fc95a" data-turbo-transient="true" />
+
+
+
+
+  <meta name="github-keyboard-shortcuts" content="repository,copilot" data-turbo-transient="true" />
+  
+
+  <meta name="selected-link" value="/84-fmill-mel30/creator.diagrams/raw/refs/heads/main/index.html" data-turbo-transient>
+  <link rel="assets" href="https://github.githubassets.com/">
+
+    <meta name="google-site-verification" content="Apib7-x98H0j5cPqHWwSMm6dNU4GmODRoqxLiDzdx9I">
+
+<meta name="octolytics-url" content="https://collector.github.com/github/collect" /><meta name="octolytics-actor-id" content="234225994" /><meta name="octolytics-actor-login" content="84-fmill-mel30" /><meta name="octolytics-actor-hash" content="878c387de851ba8b2f5a2dc9574059b05191c444f2e826d05990a3c25e822f59" />
+
+
+
+
+
+  <meta name="analytics-location" content="/&lt;user-name&gt;/&lt;repo-name&gt;/blob/raw" data-turbo-transient="true" />
+
+  
+
+
+
+
+    <meta name="user-login" content="84-fmill-mel30">
+
+  <link rel="sudo-modal" href="/sessions/sudo_modal">
+
+    <meta name="viewport" content="width=device-width">
+
+    
+
+      <meta name="description" content="GitHub is where people build software. More than 150 million people use GitHub to discover, fork, and contribute to over 420 million projects.">
+
+      <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub">
+
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
+    <meta property="fb:app_id" content="1401488693436528">
+    <meta name="apple-itunes-app" content="app-id=1477376905, app-argument=https://github.com/84-fmill-mel30/creator.diagrams/raw/refs/heads/main/index.html" />
+
+      <meta property="og:url" content="https://github.com">
+  <meta property="og:site_name" content="GitHub">
+  <meta property="og:title" content="Build software better, together">
+  <meta property="og:description" content="GitHub is where people build software. More than 150 million people use GitHub to discover, fork, and contribute to over 420 million projects.">
+  <meta property="og:image" content="https://github.githubassets.com/assets/github-logo-55c5b9a1fe52.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="1200">
+  <meta property="og:image" content="https://github.githubassets.com/assets/github-mark-57519b92ca4e.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="620">
+  <meta property="og:image" content="https://github.githubassets.com/assets/github-octocat-13c86b8b336d.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="620">
+
+  <meta property="twitter:site" content="github">
+  <meta property="twitter:site:id" content="13334762">
+  <meta property="twitter:creator" content="github">
+  <meta property="twitter:creator:id" content="13334762">
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="GitHub">
+  <meta property="twitter:description" content="GitHub is where people build software. More than 150 million people use GitHub to discover, fork, and contribute to over 420 million projects.">
+  <meta property="twitter:image" content="https://github.githubassets.com/assets/github-logo-55c5b9a1fe52.png">
+  <meta property="twitter:image:width" content="1200">
+  <meta property="twitter:image:height" content="1200">
+
+
+      <link rel="shared-web-socket" href="wss://alive.github.com/_sockets/u/234225994/ws?session=eyJ2IjoiVjMiLCJ1IjoyMzQyMjU5OTQsInMiOjE5NTM3MzQwNDUsImMiOjE0MjAzOTE3OSwidCI6MTc3MzI3MTIxN30=--b15549f45955beffce2242a68d41cd0e33aeab0b8d9f727d00e45223733ef2ac" data-refresh-url="/_alive" data-session-id="deb3d821040d327230dbf55b2832579245a42525fa67be295199af0f76fd6181">
+      <link rel="shared-web-socket-src" href="/assets-cdn/worker/socket-worker-7c82e8f232ff0383.js">
+
+      <link rel="service-worker-src" href="/assets-cdn/worker/service-worker-ae87fc493f3f3cd9.js?current_user=84-fmill-mel30&amp;errors_url=https%3A%2F%2Fapi.github.com%2F_private%2Fbrowser%2Ferrors&amp;release=fc69d991bf1fd2c5aee89e891dd15f19e2613af1&amp;actor_id=234225994&amp;is_staff=false&amp;analytics_collector_url=https%3A%2F%2Fcollector.github.com%2Fgithub%2Fcollect">
+
+      <meta name="hostname" content="github.com">
+
+
+      <meta name="keyboard-shortcuts-preference" content="all">
+      <meta name="hovercards-preference" content="true">
+      <meta name="announcement-preference-hovercard" content="true">
+
+        <meta name="expected-hostname" content="github.com">
+
+
+  <meta http-equiv="x-pjax-version" content="48fa4b9ec5f46ad465f20fab2b215efca3de382caa60e03070e82e48616e6767" data-turbo-track="reload">
+  <meta http-equiv="x-pjax-csp-version" content="568c098497d98702bac1642a2a853732a047a6ced28eabd3e15d50041a890235" data-turbo-track="reload">
+  <meta http-equiv="x-pjax-css-version" content="29efb9e0d90eec5f00934d16427f39c7d64ef9893cd48ec5de0eea0e48234ad7" data-turbo-track="reload">
+  <meta http-equiv="x-pjax-js-version" content="61b09dd1922a5e823a5044a867560e20c9df6340a0a9081714b76007f1f86af1" data-turbo-track="reload">
+
+  <meta name="turbo-cache-control" content="no-preview" data-turbo-transient="">
+
+      <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/github-6e7c458caf1e80bb.css" />
+
+
+
+    
+
+    <meta name="turbo-body-classes" content="logged-in env-production page-responsive session-authentication">
+  <meta name="disable-turbo" content="false">
+
+
+  <meta name="browser-stats-url" content="https://api.github.com/_private/browser/stats">
+
+  <meta name="browser-errors-url" content="https://api.github.com/_private/browser/errors">
+
+  <meta name="release" content="fc69d991bf1fd2c5aee89e891dd15f19e2613af1">
+  <meta name="ui-target" content="full">
+
+  <link rel="mask-icon" href="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" color="#000000">
+  <link rel="alternate icon" class="js-site-favicon" type="image/png" href="https://github.githubassets.com/favicons/favicon.png">
+  <link rel="icon" class="js-site-favicon" type="image/svg+xml" href="https://github.githubassets.com/favicons/favicon.svg" data-base-href="https://github.githubassets.com/favicons/favicon">
+
+<meta name="theme-color" content="#1e2327">
+<meta name="color-scheme" content="light dark" />
+
+
+  <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials">
+
+  </head>
+
+  <body class="logged-in env-production page-responsive session-authentication" style="word-wrap: break-word;" >
+    <div data-turbo-body class="logged-in env-production page-responsive session-authentication" style="word-wrap: break-word;" >
+      <div id="__primerPortalRoot__" role="region" style="z-index: 1000; position: absolute; width: 100%;" data-turbo-permanent></div>
+      
+
+    <div class="position-relative header-wrapper js-header-wrapper ">
+      <a href="#start-of-content" data-skip-target-assigned="false" class="tmp-p-3 color-bg-accent-emphasis color-fg-on-emphasis show-on-focus js-skip-to-content">Skip to content</a>
+
+      <span data-view-component="true" class="progress-pjax-loader Progress position-fixed width-full">
+    <span style="width: 0%;" data-view-component="true" class="Progress-item progress-pjax-loader-bar left-0 top-0 color-bg-accent-emphasis"></span>
+</span>      
+      
+      <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react-css.a7c2947c416ec834.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/keyboard-shortcuts-dialog.24804fee9fc98092.module.css" />
+
+<react-partial
+  partial-name="keyboard-shortcuts-dialog"
+  data-ssr="false"
+  data-attempted-ssr="false"
+  data-react-profiling="false"
+>
+  
+  <script type="application/json" data-target="react-partial.embeddedData">{"props":{"docsUrl":"https://docs.github.com/get-started/accessibility/keyboard-shortcuts"}}</script>
+  <div data-target="react-partial.reactRoot"></div>
+</react-partial>
+
+
+
+
+
+      
+
+          <div class="authentication-header-page" role="banner">
+
+</div>
+
+
+      <div hidden="hidden" data-view-component="true" class="js-stale-session-flash stale-session-flash flash flash-warn flash-full">
+  
+        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
+    <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+        <span class="js-stale-session-flash-signed-in" hidden>You signed in with another tab or window. <a class="Link--inTextBlock" href="">Reload</a> to refresh your session.</span>
+        <span class="js-stale-session-flash-signed-out" hidden>You signed out in another tab or window. <a class="Link--inTextBlock" href="">Reload</a> to refresh your session.</span>
+        <span class="js-stale-session-flash-switched" hidden>You switched accounts on another tab or window. <a class="Link--inTextBlock" href="">Reload</a> to refresh your session.</span>
+
+    <button id="icon-button-c127584c-1703-4f64-83d9-1efa3e79e62c" aria-labelledby="tooltip-e9cd6761-ad38-4876-96a8-89beef3dd84f" type="button" data-view-component="true" class="Button Button--iconOnly Button--invisible Button--medium flash-close js-flash-close">  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x Button-visual">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+</button><tool-tip id="tooltip-e9cd6761-ad38-4876-96a8-89beef3dd84f" for="icon-button-c127584c-1703-4f64-83d9-1efa3e79e62c" popover="manual" data-direction="s" data-type="label" data-view-component="true" class="sr-only position-absolute">Dismiss alert</tool-tip>
+
+
+  
+</div>
         
-        <div class="flex gap-3 justify-center">
-            <button id="v-normal" onclick="cambiarVista('normal')" class="btn-ui btn-active">Vista Normal</button>
-            <button id="v-ampliado" onclick="cambiarVista('ampliado')" class="btn-ui">Info Extendida</button>
-            <button id="v-diagramas" onclick="cambiarVista('diagramas')" class="btn-ui bg-cyan-900 border-cyan-600 hover:bg-cyan-800"><i class="fas fa-projector text-yellow-400 mr-2"></i>Solo Diagramas</button>
-            <button onclick="abrirDrive()" class="btn-ui bg-green-900/50 border-green-600 hover:bg-green-800"><i class="fab fa-google-drive mr-2"></i>Buscar en Drive</button>
-        </div>
-    </nav>
+          
+    </div>
 
-    <main class="flex-1 p-6 bg-[#05080f] overflow-y-auto">
-        <div id="wrapper-reporte" class="hidden">
-            <div class="hoja-pdf neon-border">
-                <div class="flex justify-between border-b-[6px] border-black pb-6 mb-8">
-                    <div class="flex items-center gap-4">
-                        <div class="bg-black text-white p-2 font-tech font-black text-3xl italic">PPS</div>
-                        <div>
-                            <h2 class="text-4xl font-black tracking-tighter uppercase italic">Technical <span class="text-red-700">Diagram</span></h2>
-                            <p class="text-[11px] font-black text-gray-500 tracking-widest">PRO PART SYSTEM - TECNOLOGÍA AUTOMOTRIZ</p>
-                        </div>
-                    </div>
-                    <div class="text-right text-[11px] font-bold leading-tight">
-                        <p>FERNANDO MILLÁN / WA: 7776838196</p>
-                        <p>FECHA: <span id="span-fecha"></span></p>
-                    </div>
-                </div>
-                <div id="area-datos"></div>
-            </div>
-        </div>
-    </main>
+  <div id="start-of-content" class="show-on-focus"></div>
 
-    <script>
-        // CONFIGURACIÓN DE TU EXCEL CSV EN GITHUB
-        const URL_CSV = "https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/master_data.csv";
-        let db = [];
-        let modo_vista = 'normal';
 
-        async function sincronizar() {
-            try {
-                const res = await fetch(URL_CSV + "?v=" + Date.now());
-                const csvData = await res.text();
-                Papa.parse(csvData, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        db = results.data;
-                        document.getElementById('led').className = "h-3 w-3 rounded-full bg-green-500 animate-pulse";
-                        document.getElementById('status-text').className = "text-[10px] font-bold text-green-500 font-tech uppercase italic";
-                        document.getElementById('status-text').innerText = "Excel Sincronizado: " + db.length + " Datos";
-                    }
-                });
-            } catch (e) { console.error("Fallo de enlace a base"); }
-        }
 
-        function cambiarVista(m) {
-            modo_vista = m;
-            document.querySelectorAll('.btn-ui').forEach(b => b.classList.remove('btn-active'));
-            document.getElementById('v-' + m).classList.add('btn-active');
-            superBusqueda();
-        }
 
-        function superBusqueda() {
-            const busqueda = document.getElementById('main-search').value.toLowerCase();
-            if(!busqueda) return;
-            document.getElementById('wrapper-reporte').classList.remove('hidden');
-            document.getElementById('span-fecha').innerText = new Date().toLocaleDateString();
-            const filtrados = db.filter(item => Object.values(item).some(valor => String(valor).toLowerCase().includes(busqueda)));
-            imprimirResultados(filtrados);
-        }
 
-        function imprimirResultados(datos) {
-            const area = document.getElementById('area-datos');
-            let html = "";
-            if(datos.length === 0) {
-                html = `<div class="p-20 text-center uppercase font-black text-gray-400 border-2 border-dashed border-gray-200">Dato no localizado en base Master. Use botón Drive.</div>`;
-            } else {
-                datos.forEach(i => {
-                    if(modo_vista === 'diagramas' && !i.diagrama) return;
-                    html += `
-                    <div class="mb-12 border-b-2 border-gray-100 pb-8 page-break">
-                        <div class="flex justify-between items-center bg-slate-900 text-white p-3 mb-6">
-                            <h3 class="text-2xl font-black uppercase italic tracking-tighter">${i.marca || ''} ${i.modelo || i.vehiculo || ''} - ${i.sistema || ''}</h3>
-                        </div>
-                        
-                        <div class="${modo_vista === 'diagramas' ? 'hidden' : 'grid'} grid-cols-2 gap-x-12 gap-y-4 text-sm mb-6 px-4">
-                            <div><strong>Componente:</strong> <span class="font-bold">${i.componente || '-'}</span></div>
-                            <div><strong>Pinout:</strong> <span class="text-red-700 font-black text-lg">${i.pin || '-'}</span></div>
-                            <div><strong>Prueba/Val:</strong> <span class="font-bold text-blue-800">${i.prueba || '-'}</span></div>
-                            <div><strong>Color:</strong> <span class="font-bold">${i.color || '-'}</span></div>
-                        </div>
 
-                        ${modo_vista === 'ampliado' && i.tip_pro ? `<p class="mt-2 text-[11px] p-2 bg-yellow-50 border border-yellow-200 italic mb-4"><strong>TIP PRO:</strong> ${i.tip_pro}</p>` : ''}
 
-                        ${i.diagrama ? `
-                            <div class="mt-8 px-4 text-center">
-                                <p class="text-[11px] font-black uppercase mb-3 text-gray-500">Diagrama Técnico de Referencia (A todo Color):</p>
-                                <img src="${i.diagrama}" class="w-full border-4 border-gray-200 rounded shadow-2xl" onerror="this.style.display='none'">
-                            </div>
-                        ` : ''}
-                    </div>`;
-                });
-            }
-            area.innerHTML = h;
-        }
 
-        function activarMicrofono() {
-            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if(!Speech) return alert("Micro no soportado");
-            const rec = new Speech();
-            rec.lang = 'es-MX';
-            rec.onstart = () => document.getElementById('btn-mic').classList.add('mic-active');
-            rec.onresult = (e) => { document.getElementById('main-search').value = e.results[0][0].transcript; superBusqueda(); };
-            rec.onend = () => document.getElementById('btn-mic').classList.remove('mic-active');
-            rec.start();
-        }
+    <div id="js-flash-container" class="flash-container" data-turbo-replace>
 
-        function abrirDrive() { window.open(`https://drive.google.com/drive/search?q=${encodeURIComponent(document.getElementById('main-search').value)}`, '_blank'); }
-        function enviarWA() { window.open(`https://wa.me/?text=${encodeURIComponent('Reporte PPS: ' + document.getElementById('main-search').value)}`, '_blank'); }
 
-        sincronizar();
-    </script>
-</body>
+
+
+  <template class="js-flash-template">
+    
+<div class="flash flash-full   {{ className }}">
+  <div >
+    <button autofocus class="flash-close js-flash-close" type="button" aria-label="Dismiss this message">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+    </button>
+    <div aria-atomic="true" role="alert" class="js-flash-alert">
+      
+      <div>{{ message }}</div>
+
+    </div>
+  </div>
+</div>
+  </template>
+</div>
+
+
+    
+  <notification-shelf-watcher data-base-url="https://github.com/notifications/beta/shelf" data-channel="eyJjIjoibm90aWZpY2F0aW9uLWNoYW5nZWQ6MjM0MjI1OTk0IiwidCI6MTc3MzI3MTIxN30=--207809ff6ad8dfa6f0df87ef802291c2e578cfd49d454fd6d9b312daba6dda0d" data-view-component="true" class="js-socket-channel"></notification-shelf-watcher>
+  <div hidden data-initial data-target="notification-shelf-watcher.placeholder"></div>
+
+
+
+
+
+
+  <div
+    class="application-main "
+    data-commit-hovercards-enabled
+    data-discussion-hovercards-enabled
+    data-issue-and-pr-hovercards-enabled
+    data-project-hovercards-enabled
+  >
+      <main>
+        
+<div class="text-center mx-auto m-2" style="width: 630px">
+  <div class="d-flex mb-4 flex-items-center">
+    <h2 class="f2 text-normal flex-auto">Verify your two-factor authentication (2FA) settings</h2>
+  </div>
+
+  <div class="auth-form-body mb-4" style="padding: 30px">
+
+    <div class="d-flex flex-column flex-auto mb-4">
+      <div class="d-flex flex-justify-center mb-2">
+        <img img_class="avatar" src="https://avatars.githubusercontent.com/u/234225994?s=100&amp;v=4" width="50" height="50" alt="@84-fmill-mel30" class=" avatar-user" />
+      </div>
+      <div class="text-center">
+        <h3 class="color-fg-default lh-condensed">Fernando Millán Melchor</h3>
+        <h4 class="color-fg-muted lh-condensed text-normal">84-fmill-mel30</h4>
+      </div>
+    </div>
+
+    <div data-view-component="true" class="flash flash-full mb-4">
+  
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-info float-left v-align-top mt-1 mb-4">
+    <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path>
+</svg>
+      <div class="text-left text-bold">
+        This is a one-time verification of your recently configured 2FA credentials.
+          You can no longer delay 2FA verification, please verify to continue.
+      </div>
+
+
+  
+</div>
+    <p class="mb-4 text-left">
+      Make sure that 2FA is correctly configured, and avoid a potential account lockout disaster.
+      If you're having trouble verifying, you'll be able to reconfigure 2FA for your account.
+    </p>
+
+    <div class="d-flex flex-justify-center">
+      <!-- '"` --><!-- </textarea></xmp> --></option></form><form data-turbo="false" action="/settings/two_factor_checkup" accept-charset="UTF-8" method="get">
+        <button style="width: 200px; height: 40px" type="submit" data-view-component="true" class="Button--primary Button--medium Button">  <span class="Button-content">
+    <span class="Button-label">Verify 2FA now</span>
+  </span>
+</button>
+
+</form>    </div>
+  </div>
+
+</div>
+
+      </main>
+  </div>
+
+          <div class="footer-session-authentication" role="contentinfo">
+    <ul class="footer-session-authentication-links">
+        <li>
+          <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to Terms&quot;,&quot;label&quot;:&quot;text:terms&quot;}" href="https://docs.github.com/site-policy/github-terms/github-terms-of-service" data-view-component="true" class="Link--secondary Link">Terms</a>
+        </li>
+
+        <li>
+          <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to privacy&quot;,&quot;label&quot;:&quot;text:privacy&quot;}" href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement" data-view-component="true" class="Link--secondary Link">Privacy</a>
+        </li>
+
+        <li>
+          <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to docs&quot;,&quot;label&quot;:&quot;text:docs&quot;}" href="https://docs.github.com" data-view-component="true" class="Link--secondary Link">Docs</a>
+        </li>
+
+        <li>
+            <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to contact&quot;,&quot;label&quot;:&quot;text:contact&quot;}" href="https://support.github.com" data-view-component="true" class="Link--secondary Link">Contact GitHub Support</a>
+        </li>
+
+    </ul>
+  </div>
+
+
+
+
+
+
+  <div id="ajax-error-message" class="ajax-error-message flash flash-error" hidden>
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
+    <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+    <button type="button" class="flash-close js-ajax-error-dismiss" aria-label="Dismiss error">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+    </button>
+    You can’t perform that action at this time.
+  </div>
+
+    <template id="site-details-dialog">
+  <details class="details-reset details-overlay details-overlay-dark lh-default color-fg-default hx_rsm" open>
+    <summary role="button" aria-label="Close dialog"></summary>
+    <details-dialog class="Box Box--overlay d-flex flex-column anim-fade-in fast hx_rsm-dialog hx_rsm-modal">
+      <button class="Box-btn-octicon m-0 btn-octicon position-absolute right-0 top-0" type="button" aria-label="Close dialog" data-close-dialog>
+        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+      </button>
+      <div class="octocat-spinner tmp-my-6 js-details-dialog-spinner"></div>
+    </details-dialog>
+  </details>
+</template>
+
+    <div class="Popover js-hovercard-content position-absolute" style="display: none; outline: none;">
+  <div class="Popover-message Popover-message--bottom-left Popover-message--large Box color-shadow-large" style="width:360px;">
+  </div>
+</div>
+
+    <template id="snippet-clipboard-copy-button">
+  <div class="zeroclipboard-container position-absolute right-0 top-0">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn js-clipboard-copy m-2 p-0" data-copy-feedback="Copied!" data-tooltip-direction="w">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon m-2">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none m-2">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div>
+</template>
+<template id="snippet-clipboard-copy-button-unpositioned">
+  <div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div>
+</template>
+
+
+    <style>
+      .user-mention[href$="/84-fmill-mel30"] {
+        color: var(--color-user-mention-fg);
+        background-color: var(--bgColor-attention-muted, var(--color-attention-subtle));
+        border-radius: 2px;
+        margin-left: -2px;
+        margin-right: -2px;
+      }
+      .user-mention[href$="/84-fmill-mel30"]:before,
+      .user-mention[href$="/84-fmill-mel30"]:after {
+        content: '';
+        display: inline-block;
+        width: 2px;
+      }
+    </style>
+
+
+    </div>
+    <div id="js-global-screen-reader-notice" class="sr-only mt-n1" aria-live="polite" aria-atomic="true" ></div>
+    <div id="js-global-screen-reader-notice-assertive" class="sr-only mt-n1" aria-live="assertive" aria-atomic="true"></div>
+  </body>
 </html>
+
