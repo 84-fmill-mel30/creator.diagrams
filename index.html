@@ -1,498 +1,1235 @@
- 
-
-
-
-
-
-
 <!DOCTYPE html>
-<html
-  lang="en"
-    class="html-auth"
-  
-  data-color-mode="auto" data-light-theme="light" data-dark-theme="dark"
-  data-a11y-animated-images="system" data-a11y-link-underlines="true"
-  
-  >
-
-    <style>
-:root {
-  --fontStack-monospace: "Monaspace Neon", ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important;
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<title>PROPART · ANALIZADOR DIAGRAMAS + DIAGNÓSTICO IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#03070E;--bg2:#060F1A;--card:#091828;--card2:#0C2040;
+  --blue:#1E8CE0;--green:#00C48C;--red:#FF4B5C;--gold:#F5A623;
+  --purple:#A855F7;--cyan:#00D4E8;--orange:#FF7A2F;
+  --white:#EEF6FF;--lgray:#6A8CAA;--gray:#2A4060;--border:#12304E;
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Exo 2',sans-serif;color:var(--white);display:flex;flex-direction:column;
+  max-width:520px;margin:0 auto;box-shadow:0 0 80px rgba(0,0,0,.9)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:repeating-linear-gradient(0deg,transparent 27px,rgba(30,140,224,.013) 28px),
+  repeating-linear-gradient(90deg,transparent 27px,rgba(30,140,224,.013) 28px)}
+
+/* ── HDR ── */
+.hdr{background:linear-gradient(180deg,#020810,#040D1A);border-bottom:2px solid var(--purple);
+  padding:8px 12px;display:flex;align-items:center;gap:9px;flex-shrink:0;z-index:10;position:relative;
+  box-shadow:0 4px 28px rgba(168,85,247,.22)}
+.hdr-logo{width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--purple),#2D1B69);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:0 0 18px rgba(168,85,247,.5);flex-shrink:0}
+.hdr-info h1{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;line-height:1}
+.hdr-info p{font-size:7px;color:var(--purple);letter-spacing:1.5px;margin-top:1px}
+.hdr-badge{margin-left:auto;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);
+  border-radius:6px;padding:3px 9px;font-family:'Rajdhani',sans-serif;font-size:8px;
+  font-weight:700;color:var(--purple);letter-spacing:1px;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--purple);animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.5)}}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;z-index:1}
+.main::-webkit-scrollbar{width:2px}
+.main::-webkit-scrollbar-thumb{background:#0A3A60;border-radius:2px}
+.sec{padding:10px 11px 0}
+
+/* ── MODE TABS (top) ── */
+.mode-tabs{display:flex;gap:0;margin-bottom:9px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.mtab{flex:1;padding:10px 8px;background:var(--card);font-family:'Rajdhani',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;color:var(--lgray);
+  transition:all .2s;text-align:center;border:none}
+.mtab.on{background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(67,56,202,.2));
+  color:var(--purple);box-shadow:inset 0 -2px 0 var(--purple)}
+.mtab:active{transform:scale(.97)}
+
+/* ── VEHICLE SELECTOR ── */
+.veh-sel{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 12px;margin-bottom:9px}
+.veh-sel select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:9px 11px;font-size:12px;color:var(--white);font-family:'Exo 2',sans-serif;outline:none;
+  cursor:pointer;appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236A8CAA'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;margin-top:6px}
+.veh-sel select option{background:var(--bg);color:var(--white)}
+.veh-info{display:none;margin-top:8px;padding:8px 10px;background:rgba(168,85,247,.06);
+  border:1px solid rgba(168,85,247,.15);border-radius:8px}
+.veh-info-row{display:flex;justify-content:space-between;font-size:9px;padding:2px 0}
+.veh-info-row span:first-child{color:var(--lgray);font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.5px}
+.veh-info-row span:last-child{color:var(--white);font-family:'Share Tech Mono',monospace}
+
+/* ── UPLOAD ── */
+.drop-zone{border:2px dashed rgba(168,85,247,.3);border-radius:14px;
+  padding:22px 14px;text-align:center;cursor:pointer;transition:all .3s;
+  position:relative;overflow:hidden;background:rgba(168,85,247,.03);margin-bottom:9px}
+.drop-zone::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(168,85,247,.07),transparent 70%)}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--purple);background:rgba(168,85,247,.08)}
+.dz-icon{font-size:36px;display:block;animation:float 3s ease-in-out infinite;margin-bottom:6px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.dz-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;margin-bottom:2px}
+.dz-sub{font-size:8px;color:var(--lgray);line-height:1.7}
+.dz-fmts{display:flex;justify-content:center;gap:5px;margin-top:8px;flex-wrap:wrap}
+.fmt{font-size:7px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid;letter-spacing:.5px}
+#file-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:10}
+.prev-wrap{display:none;position:relative;border-radius:11px;overflow:hidden;
+  border:1px solid var(--border);margin-bottom:9px;background:#000;cursor:pointer}
+#prev-img{width:100%;display:block;max-height:160px;object-fit:contain;background:#000}
+.prev-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.prev-wrap:hover .prev-overlay{opacity:1}
+.prev-lbl{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;
+  background:rgba(168,85,247,.8);padding:5px 14px;border-radius:7px;letter-spacing:1px}
+.prev-x{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;
+  background:rgba(255,75,92,.85);border:none;cursor:pointer;color:#fff;font-size:12px;
+  display:flex;align-items:center;justify-content:center;z-index:2}
+
+/* ── BUTTONS ── */
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
+.btn-analyze{width:100%;background:linear-gradient(135deg,#7C3AED,#4338CA);color:#fff;
+  border:none;border-radius:11px;padding:12px;font-family:'Rajdhani',sans-serif;
+  font-weight:700;font-size:12px;letter-spacing:1.5px;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  box-shadow:0 4px 22px rgba(124,58,237,.45)}
+.btn-analyze:disabled{opacity:.35;cursor:not-allowed}
+.btn-analyze:not(:disabled):active{transform:scale(.98)}
+.btn-db{background:linear-gradient(135deg,#0E7490,#155E75);color:#fff;
+  border:none;border-radius:11px;padding:12px;font-family:'Rajdhani',sans-serif;
+  font-weight:700;font-size:12px;letter-spacing:1.5px;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  box-shadow:0 4px 22px rgba(14,116,144,.4)}
+.btn-db:disabled{opacity:.35;cursor:not-allowed}
+.btn-db:not(:disabled):active{transform:scale(.98)}
+
+/* ── PROGRESS ── */
+.prog-wrap{display:none;margin-bottom:10px}
+.prog-bg{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));
+  border-radius:3px;transition:width .5s ease;width:0}
+.prog-txt{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--cyan);line-height:2}
+
+/* ── FILTER TABS ── */
+.filter-tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.ftab{padding:6px 10px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);
+  font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;cursor:pointer;
+  transition:all .2s;letter-spacing:.5px;display:flex;align-items:center;gap:4px}
+.ftab.on{box-shadow:0 0 10px var(--glow)}
+.ftab .cnt{font-family:'Share Tech Mono',monospace;font-size:8px;opacity:.7}
+.ftab:active{transform:scale(.92)}
+
+/* ── VIEW TABS ── */
+.view-tabs{display:flex;gap:5px;margin-bottom:8px}
+.vtab{flex:1;padding:7px;border-radius:8px;background:var(--card);border:1px solid var(--border);
+  font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.8px;
+  cursor:pointer;color:var(--lgray);transition:all .2s;text-align:center}
+.vtab.on{background:rgba(168,85,247,.18);border-color:var(--purple);color:var(--purple)}
+
+/* ── CANVAS ── */
+.canvas-wrap{position:relative;border-radius:11px;overflow:hidden;border:1px solid var(--border);background:#050B14}
+#diag-canvas{display:block;width:100%}
+#overlay-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#hit-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+.c-badge{position:absolute;top:6px;left:6px;background:rgba(3,7,14,.85);
+  border-radius:5px;padding:3px 9px;font-family:'Share Tech Mono',monospace;
+  font-size:7.5px;color:var(--cyan);pointer-events:none;border:1px solid rgba(0,212,232,.2)}
+.c-stats{position:absolute;top:6px;right:6px;background:rgba(3,7,14,.85);
+  border-radius:5px;padding:3px 9px;font-family:'Share Tech Mono',monospace;
+  font-size:7px;color:var(--green);pointer-events:none;border:1px solid rgba(0,196,140,.2)}
+.c-hint{position:absolute;bottom:6px;right:6px;background:rgba(3,7,14,.7);
+  border-radius:5px;padding:2px 7px;font-size:7px;color:var(--lgray);pointer-events:none;
+  font-family:'Rajdhani',sans-serif}
+
+.zoom-row{display:flex;align-items:center;gap:6px;margin-top:7px}
+.zbtn{width:32px;height:32px;border-radius:8px;background:var(--card);
+  border:1px solid var(--border);cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;color:var(--white);transition:all .15s}
+.zbtn:active{transform:scale(.88);background:rgba(168,85,247,.15)}
+.zlabel{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--lgray);flex:1;text-align:center}
+
+/* ── MISC UI ── */
+.legend-box,.filter-box,.ai-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 12px;margin-bottom:9px}
+.ai-card{border-color:rgba(168,85,247,.28)}
+.box-title{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--lgray);margin-bottom:9px}
+.leg-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.leg-row{display:flex;align-items:center;gap:7px;padding:5px 7px;border-radius:7px;cursor:pointer;transition:all .2s;border:1px solid transparent}
+.leg-row:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+.wire-swatch{width:28px;height:5px;border-radius:3px;flex-shrink:0}
+.leg-name{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700}
+.leg-v{font-family:'Share Tech Mono',monospace;font-size:7.5px;color:var(--lgray)}
+.fsearch{display:flex;align-items:center;gap:7px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:7px 11px;margin-bottom:8px}
+.fsearch input{background:none;border:none;flex:1;font-size:12px;outline:none;color:var(--white);font-family:'Exo 2',sans-serif}
+.brow{display:flex;gap:6px;margin-top:8px}
+.bsm{flex:1;padding:8px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;
+  font-size:9px;letter-spacing:.8px;cursor:pointer;border:1px solid var(--border);
+  background:var(--card);color:var(--lgray);transition:all .15s}
+.bsm.blu{background:rgba(30,140,224,.12);border-color:var(--blue);color:var(--blue)}
+.bsm.pur{background:rgba(168,85,247,.12);border-color:var(--purple);color:var(--purple)}
+.bsm.grn{background:rgba(0,196,140,.12);border-color:var(--green);color:var(--green)}
+.ai-hdr{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.ai-ttl{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--purple)}
+.wtbl{width:100%;border-collapse:collapse;font-size:8.5px;margin-bottom:8px}
+.wtbl th{background:rgba(168,85,247,.07);color:var(--purple);font-family:'Rajdhani',sans-serif;
+  font-size:8px;letter-spacing:1px;padding:6px 8px;text-align:left;font-weight:700;
+  border-bottom:1px solid rgba(168,85,247,.2);position:sticky;top:0;z-index:2}
+.wtbl td{padding:5px 8px;border-bottom:1px solid rgba(18,48,78,.35);
+  font-family:'Share Tech Mono',monospace;color:var(--lgray);vertical-align:middle}
+.wtbl tr:hover td{background:rgba(168,85,247,.05);color:var(--white)}
+.wtbl tr.hidden-row{display:none}
+.wdot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.tbl-scroll{max-height:320px;overflow-y:auto;border-radius:8px;border:1px solid var(--border)}
+.tbl-scroll::-webkit-scrollbar{width:3px}
+.tbl-scroll::-webkit-scrollbar-thumb{background:var(--purple);border-radius:3px}
+.det-pop{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-top:8px;display:none}
+.det-title{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:6px}
+.det-body{font-size:9px;color:var(--lgray);line-height:1.85}
+.report-txt{font-size:9.5px;color:var(--lgray);line-height:1.85;white-space:pre-wrap;
+  border-top:1px solid rgba(168,85,247,.18);padding-top:10px;margin-top:10px}
+.export-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
+.ebtn{padding:12px;border-radius:9px;font-family:'Rajdhani',sans-serif;font-weight:700;
+  font-size:10px;letter-spacing:1px;cursor:pointer;border:1px solid;transition:all .15s;text-align:center}
+.ebtn.blue{background:rgba(30,140,224,.12);border-color:var(--blue);color:var(--blue)}
+.ebtn.purple{background:rgba(168,85,247,.12);border-color:var(--purple);color:var(--purple)}
+
+/* ═══════════════════════════════════════════
+   AUDIO DIAGNOSTIC STYLES
+   ═══════════════════════════════════════════ */
+.audio-panel{display:none}
+.mic-zone{text-align:center;padding:20px 10px}
+.mic-btn{width:110px;height:110px;border-radius:50%;border:3px solid var(--cyan);
+  background:radial-gradient(circle,rgba(0,212,232,.12),rgba(0,212,232,.02));
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;transition:all .3s;position:relative}
+.mic-btn::before{content:'';position:absolute;inset:-6px;border-radius:50%;
+  border:2px solid rgba(0,212,232,.15);animation:mic-pulse 2s ease-in-out infinite}
+.mic-btn.recording{border-color:var(--red);background:radial-gradient(circle,rgba(255,75,92,.2),rgba(255,75,92,.05));
+  box-shadow:0 0 40px rgba(255,75,92,.35)}
+.mic-btn.recording::before{border-color:rgba(255,75,92,.3);animation:mic-pulse-rec .8s ease-in-out infinite}
+.mic-btn.analyzing{border-color:var(--purple);background:radial-gradient(circle,rgba(168,85,247,.2),rgba(168,85,247,.05))}
+.mic-ico{font-size:44px;transition:transform .2s}
+.mic-btn.recording .mic-ico{animation:mic-shake .15s linear infinite}
+@keyframes mic-pulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.12);opacity:.15}}
+@keyframes mic-pulse-rec{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.2);opacity:.2}}
+@keyframes mic-shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+.mic-label{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;margin-bottom:4px}
+.mic-sub{font-size:8px;color:var(--lgray);line-height:1.6}
+.mic-timer{font-family:'Share Tech Mono',monospace;font-size:28px;color:var(--cyan);margin:8px 0;letter-spacing:2px}
+.mic-timer.rec{color:var(--red)}
+
+/* Audio Viz */
+.audio-viz{border-radius:11px;overflow:hidden;border:1px solid var(--border);
+  background:#050B14;margin-bottom:9px;position:relative}
+#wave-canvas{display:block;width:100%;height:80px}
+#spec-canvas{display:block;width:100%;height:100px}
+.viz-label{position:absolute;top:4px;left:8px;font-family:'Share Tech Mono',monospace;
+  font-size:7px;color:rgba(0,212,232,.6);pointer-events:none}
+.viz-label2{position:absolute;top:84px;left:8px;font-family:'Share Tech Mono',monospace;
+  font-size:7px;color:rgba(168,85,247,.6);pointer-events:none}
+
+/* Audio Stats */
+.audio-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:9px}
+.astat{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:8px;text-align:center}
+.astat-val{font-family:'Share Tech Mono',monospace;font-size:18px;font-weight:700;line-height:1}
+.astat-lbl{font-family:'Rajdhani',sans-serif;font-size:7px;font-weight:700;letter-spacing:1px;
+  color:var(--lgray);margin-top:3px}
+
+/* Diagnosis Results */
+.diag-results{display:none}
+.diag-card{background:var(--card);border-radius:11px;padding:12px;margin-bottom:8px;
+  border-left:3px solid var(--cyan);transition:all .2s}
+.diag-card.high{border-left-color:var(--red)}
+.diag-card.med{border-left-color:var(--gold)}
+.diag-card.low{border-left-color:var(--green)}
+.diag-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.diag-ico{font-size:20px}
+.diag-name{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px}
+.diag-prob{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700}
+.diag-body{font-size:9px;color:var(--lgray);line-height:1.8}
+.diag-body b{color:var(--white)}
+.diag-tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.diag-tag{font-size:7px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:2px 8px;
+  border-radius:10px;background:rgba(0,212,232,.1);border:1px solid rgba(0,212,232,.25);color:var(--cyan)}
+.diag-tag.red{background:rgba(255,75,92,.1);border-color:rgba(255,75,92,.25);color:var(--red)}
+
+/* AI Analysis */
+.ai-audio-card{background:var(--card);border:1px solid rgba(168,85,247,.3);border-radius:11px;
+  padding:12px;margin-bottom:9px;display:none}
+.ai-audio-txt{font-size:9.5px;color:var(--lgray);line-height:1.85;white-space:pre-wrap}
+
+/* Toast */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:9px 16px;
+  font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.8px;
+  z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;max-width:340px}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:var(--green);color:var(--green)}
+#toast.err{border-color:var(--red);color:var(--red)}
+#toast.warn{border-color:var(--gold);color:var(--gold)}
+#toast.info{border-color:var(--blue);color:var(--blue)}
+.result-panel{display:none;padding-bottom:20px}
 </style>
-
-
-
-
-  <head>
-    <meta charset="utf-8">
-  <link rel="dns-prefetch" href="https://github.githubassets.com">
-  <link rel="dns-prefetch" href="https://avatars.githubusercontent.com">
-  <link rel="dns-prefetch" href="https://github-cloud.s3.amazonaws.com">
-  <link rel="dns-prefetch" href="https://user-images.githubusercontent.com/">
-  <link rel="preconnect" href="https://github.githubassets.com" crossorigin>
-  <link rel="preconnect" href="https://avatars.githubusercontent.com">
-
-  
-
-  <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/light-0c8222dcd7a4f9b7.css" /><link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/dark-fc6eec18532c3ae0.css" /><link data-color-theme="light_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_high_contrast-51c0c6e0c085cc0f.css" /><link data-color-theme="light_colorblind" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_colorblind-4dd12c5689d6b012.css" /><link data-color-theme="light_colorblind_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_colorblind_high_contrast-dfa0c9e22ba6ba2b.css" /><link data-color-theme="light_tritanopia" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_tritanopia-9fd9c8859395d1a8.css" /><link data-color-theme="light_tritanopia_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_tritanopia_high_contrast-9c32304a2a8ac631.css" /><link data-color-theme="dark_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_high_contrast-96d7b2bab5a6ae4e.css" /><link data-color-theme="dark_colorblind" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_colorblind-0c6ca283d4d35cea.css" /><link data-color-theme="dark_colorblind_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_colorblind_high_contrast-2dc46b4919fae81e.css" /><link data-color-theme="dark_tritanopia" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_tritanopia-271332ec9362e8d3.css" /><link data-color-theme="dark_tritanopia_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_tritanopia_high_contrast-eb5bb84e91d6d553.css" /><link data-color-theme="dark_dimmed" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_dimmed-f3aa862f2ac7ead2.css" /><link data-color-theme="dark_dimmed_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_dimmed_high_contrast-206b6b93f856629b.css" />
-
-  <style type="text/css">
-    :root {
-      --tab-size-preference: 4;
-    }
-
-    pre, code {
-      tab-size: var(--tab-size-preference);
-    }
-  </style>
-
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-primitives-6da842159062d25e.css" />
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-9e07ff8eaaaff3a3.css" />
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/global-87aa887446e37f5c.css" />
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/github-6e7c458caf1e80bb.css" />
-  
-
-  
-
-  <script type="application/json" id="client-env">{"locale":"en","featureFlags":["a11y_status_checks_ruleset","actions_custom_images_public_preview_visibility","actions_custom_images_storage_billing_ui_visibility","actions_image_version_event","actions_workflow_language_service_allow_case_function","agent_session_retry_fetch_capi_on_401","alternate_user_config_repo","arianotify_comprehensive_migration","batch_suggested_changes","billing_ui_budget_pagination_enabled","cache_issue_labels","codeowners_validation_in_diff","codespaces_prebuild_region_target_update","coding_agent_model_selection","coding_agent_model_selection_all_skus","comments_panel_issue_comments","contentful_primer_code_blocks","copilot_3p_agent_hovercards","copilot_agent_image_upload","copilot_agent_snippy","copilot_agent_task_list_v2","copilot_agent_tasks_btn_code_nav","copilot_agent_tasks_btn_code_view","copilot_agent_tasks_btn_code_view_lines","copilot_agent_tasks_btn_repo","copilot_api_agentic_issue_marshal_yaml","copilot_ask_mode_dropdown","copilot_capi_error_response_telemetry","copilot_chat_attach_multiple_images","copilot_chat_clear_model_selection_for_default_change","copilot_chat_disable_model_picker_while_streaming","copilot_chat_enable_tool_call_logs","copilot_chat_file_redirect","copilot_chat_input_commands","copilot_chat_opening_thread_switch","copilot_chat_reduce_quota_checks","copilot_chat_repository_picker","copilot_chat_search_bar_redirect","copilot_chat_selection_attachments","copilot_chat_vision_in_claude","copilot_chat_vision_preview_gate","copilot_cli_install_cta","copilot_code_review_batch_apply_suggestions","copilot_coding_agent_free_users_exp","copilot_coding_agent_task_response","copilot_custom_copilots","copilot_custom_copilots_feature_preview","copilot_duplicate_thread","copilot_extensions_hide_in_dotcom_chat","copilot_extensions_removal_on_marketplace","copilot_features_sql_server_logo","copilot_features_zed_logo","copilot_file_block_ref_matching","copilot_ftp_hyperspace_upgrade_prompt","copilot_icebreakers_experiment_dashboard","copilot_icebreakers_experiment_hyperspace","copilot_immersive_embedded","copilot_immersive_job_result_preview","copilot_immersive_layout_routes","copilot_immersive_structured_model_picker","copilot_immersive_task_hyperlinking","copilot_immersive_task_within_chat_thread","copilot_issue_list_show_more","copilot_mc_cli_resume_any_users_task","copilot_mission_control_always_send_integration_id","copilot_mission_control_task_alive_updates","copilot_mission_control_use_task_name","copilot_org_policy_page_focus_mode","copilot_premium_request_quotas","copilot_redirect_header_button_to_agents","copilot_resource_panel","copilot_scroll_preview_tabs","copilot_share_active_subthread","copilot_spaces_ga","copilot_spaces_individual_policies_ga","copilot_spaces_pagination","copilot_spark_empty_state","copilot_spark_handle_nil_friendly_name","copilot_swe_agent_hide_model_picker_if_only_auto","copilot_swe_agent_pr_comment_model_picker","copilot_swe_agent_use_subagents","copilot_task_api_github_rest_style","copilot_unconfigured_is_inherited","copilot_usage_metrics_ga","copilot_workbench_slim_line_top_tabs","custom_instructions_file_references","custom_properties_consolidate_default_value_input","dashboard_indexeddb_caching","dashboard_lists_max_age_filter","dashboard_universe_2025","dashboard_universe_2025_feedback_dialog","dead_click_detection","disable_soft_navigate_turbo_visit","fgpat_permissions_selector_redesign","flex_cta_groups_mvp","github_models_scheduled_hydro_events","global_account_switch_dialog_lazy_load","global_agents_menu_lazy_load","global_create_menu_lazy_load","global_nav_menu_lazy_load","global_nav_react","global_user_menu_lazy_load","hide_groups_list_for_few_groups","hyperspace_2025_logged_out_batch_1","hyperspace_2025_logged_out_batch_2","hyperspace_2025_logged_out_batch_3","initial_per_page_pagination_updates","ipm_global_transactional_message_agents","ipm_global_transactional_message_copilot","ipm_global_transactional_message_issues","ipm_global_transactional_message_prs","ipm_global_transactional_message_repos","ipm_global_transactional_message_spaces","issue_fields_global_search","issue_fields_timeline_events","issues_cca_assign_actor_with_agent","issues_dashboard_inp_optimization","issues_dashboard_semantic_search","issues_diff_based_label_updates","issues_expanded_file_types","issues_index_semantic_search","issues_lazy_load_comment_box_suggestions","issues_react_auto_retry_on_error","issues_react_bots_timeline_pagination","issues_react_chrome_container_query_fix","issues_react_custom_hpc_metric","issues_react_hot_cache","issues_react_include_bots_in_pickers","issues_react_low_quality_comment_warning","issues_react_preheating_discussions","issues_react_preheating_notifications","issues_react_preheating_pulls","issues_react_prohibit_title_fallback","issues_react_resource_metrics","issues_react_safari_scroll_preservation","issues_react_ui_feedback","issues_react_use_turbo_for_cross_repo_navigation","issues_service_worker","landing_pages_ninetailed","landing_pages_web_vitals_tracking","lifecycle_label_name_updates","marketing_pages_search_explore_provider","memex_default_issue_create_repository","memex_grouped_by_edit_route","memex_live_update_hovercard","memex_mwl_filter_field_delimiter","memex_roadmap_drag_style","merge_status_header_feedback","mission_control_retry_on_401","mission_control_use_body_html","notifications_menu_defer_labels","nux_dashboard_refresh_scoped_portal","oauth_authorize_clickjacking_protection","open_agent_session_in_vscode_insiders","open_agent_session_in_vscode_stable","pr_sfv_new_diff_fetch","primer_react_css_has_selector_perf","primer_react_spinner_synchronize_animations","prs_checks_react","prs_conversations_react","prs_live_updates_issue_comments","prx_merge_status_button_alt_logic","pull_request_edit_button_redesign","pull_request_files_accurate_size_estimates","pull_request_files_virtualization","pull_request_merge_status_button","pull_request_virtualization_preload_diffs","react_blob_overlay","repository_suggester_elastic_search","ruleset_deletion_confirmation","sample_network_conn_type","secret_scanning_push_protection_exempt","session_logs_ungroup_reasoning_text","site_calculator_actions_2025","site_features_copilot_universe","site_homepage_collaborate_video","spark_prompt_secret_scanning","spark_server_connection_status","suppress_automated_browser_vitals","suppress_non_representative_vitals","viewscreen_sandbox","webp_support","workbench_store_readonly"],"login":"84-fmill-mel30","copilotApiOverrideUrl":"https://api.individual.githubcopilot.com"}</script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/wp-runtime-f0de390c1786ec68.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/28839-734cb6d8a7150172.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/85924-e131bec5f99667e1.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/34646-e68f26aaba7f2b0d.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/environment-990d83f9bff5b0e9.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/runtime-helpers-3bb6f7d6b7a2f531.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/2966-f6796bfd155feae1.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/96232-c2cf4a34762f0169.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/41013-7a6deee6d6ff15eb.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/51210-3abb7238871a5b29.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/24387-bc06b4d78bbcd753.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/81683-1370179bf9bdc0f0.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/46740-6606b1026a237412.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/81751-2c06efb98b9460b1.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/github-elements-21691d9353073fe5.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/element-registry-377dc04b8b45b524.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/react-core-017b3a88b81253a9.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/react-lib-a4cf89fce9a1300a.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/29434-47789cf97f381365.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/79039-2565b539a6ebc09b.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/61110-93cf7706e5dc8bfa.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/2887-47ac9a4b8862e6bf.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/26533-2961d590db2a09c3.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/62249-6514db80cf0cc26f.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/54195-ca6526f3483e6a6c.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/62988-af4811a8532026f8.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/60481-3c7a0fd2336c8106.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/46287-7b500b5354119a88.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/2498-7a413c8209222158.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/61075-6d5c1005b38602d6.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/89627-fc3955a85261a02a.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/49029-6c429c0e1bbd1e79.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/99328-5e06da57c4622e21.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/behaviors-7320c3a05a5a8a94.js" defer="defer"></script>
-<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/react-core.36c3e8b046fb98c7.module.css" />
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/38302-841b0fa97d5950a1.js" defer="defer"></script>
-<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/notifications-global-3413132b6df94f22.js" defer="defer"></script>
-  
-
-  <title>Verify two-factor authentication</title>
-
-
-
-  <meta name="route-pattern" content="/:user_id/:repository/raw/*name(/*path)" data-turbo-transient>
-  <meta name="route-controller" content="blob" data-turbo-transient>
-  <meta name="route-action" content="raw" data-turbo-transient>
-  <meta name="fetch-nonce" content="v2:41097683-0371-a498-7699-faf1cd6fe355">
-
-    
-  <meta name="current-catalog-service-hash" content="f3abb0cc802f3d7b95fc8762b94bdcb13bf39634c40c357301c4aa1d67a256fb">
-
-
-  <meta name="request-id" content="C53C:254601:469919:5FE37E:69B1F8AE" data-turbo-transient="true" /><meta name="html-safe-nonce" content="a6f5f095e64d97b12134a77b36a6fc46f444166bc335468497d4d60a853a5b89" data-turbo-transient="true" /><meta name="visitor-payload" content="eyJyZWZlcnJlciI6Imh0dHBzOi8vZ2l0aHViLmNvbS84NC1mbWlsbC1tZWwzMC9jcmVhdG9yLmRpYWdyYW1zL2Jsb2IvbWFpbi9pbmRleC5odG1sIiwicmVxdWVzdF9pZCI6IkM1M0M6MjU0NjAxOjQ2OTkxOTo1RkUzN0U6NjlCMUY4QUUiLCJ2aXNpdG9yX2lkIjoiMzMxMTYwNTI5OTUwODI1ODUwNyIsInJlZ2lvbl9lZGdlIjoiaWFkIiwicmVnaW9uX3JlbmRlciI6ImlhZCJ9" data-turbo-transient="true" /><meta name="visitor-hmac" content="3c267a7e996ddfe614be6e2c967e67031d34771f457f1706e2070b8d241fc95a" data-turbo-transient="true" />
-
-
-
-
-  <meta name="github-keyboard-shortcuts" content="repository,copilot" data-turbo-transient="true" />
-  
-
-  <meta name="selected-link" value="/84-fmill-mel30/creator.diagrams/raw/refs/heads/main/index.html" data-turbo-transient>
-  <link rel="assets" href="https://github.githubassets.com/">
-
-    <meta name="google-site-verification" content="Apib7-x98H0j5cPqHWwSMm6dNU4GmODRoqxLiDzdx9I">
-
-<meta name="octolytics-url" content="https://collector.github.com/github/collect" /><meta name="octolytics-actor-id" content="234225994" /><meta name="octolytics-actor-login" content="84-fmill-mel30" /><meta name="octolytics-actor-hash" content="878c387de851ba8b2f5a2dc9574059b05191c444f2e826d05990a3c25e822f59" />
-
-
-
-
-
-  <meta name="analytics-location" content="/&lt;user-name&gt;/&lt;repo-name&gt;/blob/raw" data-turbo-transient="true" />
-
-  
-
-
-
-
-    <meta name="user-login" content="84-fmill-mel30">
-
-  <link rel="sudo-modal" href="/sessions/sudo_modal">
-
-    <meta name="viewport" content="width=device-width">
-
-    
-
-      <meta name="description" content="GitHub is where people build software. More than 150 million people use GitHub to discover, fork, and contribute to over 420 million projects.">
-
-      <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub">
-
-    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
-    <meta property="fb:app_id" content="1401488693436528">
-    <meta name="apple-itunes-app" content="app-id=1477376905, app-argument=https://github.com/84-fmill-mel30/creator.diagrams/raw/refs/heads/main/index.html" />
-
-      <meta property="og:url" content="https://github.com">
-  <meta property="og:site_name" content="GitHub">
-  <meta property="og:title" content="Build software better, together">
-  <meta property="og:description" content="GitHub is where people build software. More than 150 million people use GitHub to discover, fork, and contribute to over 420 million projects.">
-  <meta property="og:image" content="https://github.githubassets.com/assets/github-logo-55c5b9a1fe52.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="1200">
-  <meta property="og:image" content="https://github.githubassets.com/assets/github-mark-57519b92ca4e.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="620">
-  <meta property="og:image" content="https://github.githubassets.com/assets/github-octocat-13c86b8b336d.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="620">
-
-  <meta property="twitter:site" content="github">
-  <meta property="twitter:site:id" content="13334762">
-  <meta property="twitter:creator" content="github">
-  <meta property="twitter:creator:id" content="13334762">
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:title" content="GitHub">
-  <meta property="twitter:description" content="GitHub is where people build software. More than 150 million people use GitHub to discover, fork, and contribute to over 420 million projects.">
-  <meta property="twitter:image" content="https://github.githubassets.com/assets/github-logo-55c5b9a1fe52.png">
-  <meta property="twitter:image:width" content="1200">
-  <meta property="twitter:image:height" content="1200">
-
-
-      <link rel="shared-web-socket" href="wss://alive.github.com/_sockets/u/234225994/ws?session=eyJ2IjoiVjMiLCJ1IjoyMzQyMjU5OTQsInMiOjE5NTM3MzQwNDUsImMiOjE0MjAzOTE3OSwidCI6MTc3MzI3MTIxN30=--b15549f45955beffce2242a68d41cd0e33aeab0b8d9f727d00e45223733ef2ac" data-refresh-url="/_alive" data-session-id="deb3d821040d327230dbf55b2832579245a42525fa67be295199af0f76fd6181">
-      <link rel="shared-web-socket-src" href="/assets-cdn/worker/socket-worker-7c82e8f232ff0383.js">
-
-      <link rel="service-worker-src" href="/assets-cdn/worker/service-worker-ae87fc493f3f3cd9.js?current_user=84-fmill-mel30&amp;errors_url=https%3A%2F%2Fapi.github.com%2F_private%2Fbrowser%2Ferrors&amp;release=fc69d991bf1fd2c5aee89e891dd15f19e2613af1&amp;actor_id=234225994&amp;is_staff=false&amp;analytics_collector_url=https%3A%2F%2Fcollector.github.com%2Fgithub%2Fcollect">
-
-      <meta name="hostname" content="github.com">
-
-
-      <meta name="keyboard-shortcuts-preference" content="all">
-      <meta name="hovercards-preference" content="true">
-      <meta name="announcement-preference-hovercard" content="true">
-
-        <meta name="expected-hostname" content="github.com">
-
-
-  <meta http-equiv="x-pjax-version" content="48fa4b9ec5f46ad465f20fab2b215efca3de382caa60e03070e82e48616e6767" data-turbo-track="reload">
-  <meta http-equiv="x-pjax-csp-version" content="568c098497d98702bac1642a2a853732a047a6ced28eabd3e15d50041a890235" data-turbo-track="reload">
-  <meta http-equiv="x-pjax-css-version" content="29efb9e0d90eec5f00934d16427f39c7d64ef9893cd48ec5de0eea0e48234ad7" data-turbo-track="reload">
-  <meta http-equiv="x-pjax-js-version" content="61b09dd1922a5e823a5044a867560e20c9df6340a0a9081714b76007f1f86af1" data-turbo-track="reload">
-
-  <meta name="turbo-cache-control" content="no-preview" data-turbo-transient="">
-
-      <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/github-6e7c458caf1e80bb.css" />
-
-
-
-    
-
-    <meta name="turbo-body-classes" content="logged-in env-production page-responsive session-authentication">
-  <meta name="disable-turbo" content="false">
-
-
-  <meta name="browser-stats-url" content="https://api.github.com/_private/browser/stats">
-
-  <meta name="browser-errors-url" content="https://api.github.com/_private/browser/errors">
-
-  <meta name="release" content="fc69d991bf1fd2c5aee89e891dd15f19e2613af1">
-  <meta name="ui-target" content="full">
-
-  <link rel="mask-icon" href="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" color="#000000">
-  <link rel="alternate icon" class="js-site-favicon" type="image/png" href="https://github.githubassets.com/favicons/favicon.png">
-  <link rel="icon" class="js-site-favicon" type="image/svg+xml" href="https://github.githubassets.com/favicons/favicon.svg" data-base-href="https://github.githubassets.com/favicons/favicon">
-
-<meta name="theme-color" content="#1e2327">
-<meta name="color-scheme" content="light dark" />
-
-
-  <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials">
-
-  </head>
-
-  <body class="logged-in env-production page-responsive session-authentication" style="word-wrap: break-word;" >
-    <div data-turbo-body class="logged-in env-production page-responsive session-authentication" style="word-wrap: break-word;" >
-      <div id="__primerPortalRoot__" role="region" style="z-index: 1000; position: absolute; width: 100%;" data-turbo-permanent></div>
-      
-
-    <div class="position-relative header-wrapper js-header-wrapper ">
-      <a href="#start-of-content" data-skip-target-assigned="false" class="tmp-p-3 color-bg-accent-emphasis color-fg-on-emphasis show-on-focus js-skip-to-content">Skip to content</a>
-
-      <span data-view-component="true" class="progress-pjax-loader Progress position-fixed width-full">
-    <span style="width: 0%;" data-view-component="true" class="Progress-item progress-pjax-loader-bar left-0 top-0 color-bg-accent-emphasis"></span>
-</span>      
-      
-      <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react-css.a7c2947c416ec834.module.css" />
-<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/keyboard-shortcuts-dialog.24804fee9fc98092.module.css" />
-
-<react-partial
-  partial-name="keyboard-shortcuts-dialog"
-  data-ssr="false"
-  data-attempted-ssr="false"
-  data-react-profiling="false"
->
-  
-  <script type="application/json" data-target="react-partial.embeddedData">{"props":{"docsUrl":"https://docs.github.com/get-started/accessibility/keyboard-shortcuts"}}</script>
-  <div data-target="react-partial.reactRoot"></div>
-</react-partial>
-
-
-
-
-
-      
-
-          <div class="authentication-header-page" role="banner">
-
-</div>
-
-
-      <div hidden="hidden" data-view-component="true" class="js-stale-session-flash stale-session-flash flash flash-warn flash-full">
-  
-        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
-    <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
-</svg>
-        <span class="js-stale-session-flash-signed-in" hidden>You signed in with another tab or window. <a class="Link--inTextBlock" href="">Reload</a> to refresh your session.</span>
-        <span class="js-stale-session-flash-signed-out" hidden>You signed out in another tab or window. <a class="Link--inTextBlock" href="">Reload</a> to refresh your session.</span>
-        <span class="js-stale-session-flash-switched" hidden>You switched accounts on another tab or window. <a class="Link--inTextBlock" href="">Reload</a> to refresh your session.</span>
-
-    <button id="icon-button-c127584c-1703-4f64-83d9-1efa3e79e62c" aria-labelledby="tooltip-e9cd6761-ad38-4876-96a8-89beef3dd84f" type="button" data-view-component="true" class="Button Button--iconOnly Button--invisible Button--medium flash-close js-flash-close">  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x Button-visual">
-    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-</svg>
-</button><tool-tip id="tooltip-e9cd6761-ad38-4876-96a8-89beef3dd84f" for="icon-button-c127584c-1703-4f64-83d9-1efa3e79e62c" popover="manual" data-direction="s" data-type="label" data-view-component="true" class="sr-only position-absolute">Dismiss alert</tool-tip>
-
-
-  
-</div>
-        
-          
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logo">📐</div>
+  <div class="hdr-info">
+    <h1>PROPART ANALIZADOR</h1>
+    <p>DIAGRAMAS + DIAGNÓSTICO POR SONIDO · IA</p>
+  </div>
+  <div class="hdr-badge"><span class="ai-dot"></span>IA</div>
+</header>
+
+<div class="main">
+<div class="sec">
+
+  <!-- MODE TABS -->
+  <div class="mode-tabs">
+    <div class="mtab on" data-mode="diag" onclick="switchMode('diag')">📐 DIAGRAMAS</div>
+    <div class="mtab" data-mode="audio" onclick="switchMode('audio')">🎙 SONIDO</div>
+  </div>
+
+  <!-- API KEY -->
+  <div id="api-key-wrap" style="margin-bottom:9px;background:rgba(30,140,224,.07);border:1px solid rgba(30,140,224,.2);border-radius:11px;padding:10px 12px">
+    <div style="font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;letter-spacing:1.5px;color:#6A8CAA;margin-bottom:6px">🔑 API ANTHROPIC (opcional)</div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <input type="password" id="api-key-input" placeholder="sk-ant-api03-..."
+        style="flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(30,140,224,.3);border-radius:7px;padding:8px 10px;font-size:11px;color:#EEF6FF;outline:none;font-family:monospace"
+        oninput="saveApiKey(this.value)"/>
+      <button onclick="toggleKeyVis()" style="background:rgba(30,140,224,.1);border:1px solid rgba(30,140,224,.3);border-radius:7px;padding:8px 10px;color:#6A8CAA;cursor:pointer;font-size:13px">👁</button>
     </div>
+  </div>
 
-  <div id="start-of-content" class="show-on-focus"></div>
+</div>
 
+<!-- ═══════════ PANEL DIAGRAMAS ═══════════ -->
+<div id="diag-mode">
+<div class="sec">
+  <div class="veh-sel">
+    <div class="box-title">🚗 SELECCIONA VEHÍCULO</div>
+    <select id="veh-select"><option value="">— Elige un vehículo —</option></select>
+    <div class="veh-info" id="veh-info"></div>
+  </div>
 
+  <div class="drop-zone" id="dz">
+    <span class="dz-icon">📐</span>
+    <div class="dz-title">SUBE TU DIAGRAMA (OPCIONAL)</div>
+    <div class="dz-sub">Imagen para análisis con IA · O usa la base de datos</div>
+    <div class="dz-fmts">
+      <span class="fmt" style="color:#1E8CE0;border-color:rgba(30,140,224,.4)">JPG</span>
+      <span class="fmt" style="color:#00C48C;border-color:rgba(0,196,140,.4)">PNG</span>
+      <span class="fmt" style="color:#A855F7;border-color:rgba(168,85,247,.4)">WEBP</span>
+    </div>
+    <input type="file" id="file-input" accept="image/*"/>
+  </div>
+  <div class="prev-wrap" id="prev-wrap">
+    <img id="prev-img" src="" alt="diagrama"/>
+    <label for="file-input" class="prev-overlay"><span class="prev-lbl">📁 CAMBIAR</span></label>
+    <button class="prev-x" id="prev-x">✕</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn-db" id="btn-db" disabled>📊 VER DB</button>
+    <button class="btn-analyze" id="btn-analyze" disabled>🤖 ANALIZAR IA</button>
+  </div>
+  <div class="prog-wrap" id="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="prog-txt" id="prog-txt"></div>
+  </div>
+</div>
 
-
-
-
-
-
-    <div id="js-flash-container" class="flash-container" data-turbo-replace>
-
-
-
-
-  <template class="js-flash-template">
-    
-<div class="flash flash-full   {{ className }}">
-  <div >
-    <button autofocus class="flash-close js-flash-close" type="button" aria-label="Dismiss this message">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
-    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-</svg>
-    </button>
-    <div aria-atomic="true" role="alert" class="js-flash-alert">
-      
-      <div>{{ message }}</div>
-
+<div class="result-panel" id="result-panel">
+<div class="sec">
+  <div class="filter-tabs" id="filter-tabs"></div>
+  <div class="view-tabs">
+    <button class="vtab on" data-mode="schematic">📐 ESQUEMA</button>
+    <button class="vtab" data-mode="colored">⚡ COLOR</button>
+    <button class="vtab" data-mode="xray">🔬 RAYOS X</button>
+  </div>
+  <div class="canvas-wrap" id="canvas-wrap">
+    <canvas id="diag-canvas"></canvas>
+    <canvas id="overlay-canvas"></canvas>
+    <canvas id="hit-canvas"></canvas>
+    <div class="c-badge" id="c-badge">ESQUEMA</div>
+    <div class="c-stats" id="c-stats"></div>
+    <div class="c-hint">📍 Toca un cable</div>
+  </div>
+  <div class="zoom-row">
+    <button class="zbtn" id="z-out">−</button>
+    <span class="zlabel" id="z-label">100%</span>
+    <button class="zbtn" id="z-in">+</button>
+    <button class="zbtn" id="z-fit" style="font-size:13px;font-family:'Rajdhani',sans-serif">↺</button>
+  </div>
+</div>
+<div class="sec">
+  <div class="legend-box">
+    <div class="box-title">⚡ LEYENDA</div>
+    <div class="leg-grid" id="leg-grid"></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="filter-box">
+    <div class="box-title">🔍 BUSCAR</div>
+    <div class="fsearch">
+      <span style="color:var(--lgray)">🔍</span>
+      <input type="text" id="comp-input" placeholder="CKP, TPS, Pin 21..."/>
+      <button onclick="clearSearch()" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:15px">✕</button>
+    </div>
+    <div class="brow">
+      <button class="bsm blu" id="btn-all">👁 TODOS</button>
+      <button class="bsm pur" id="btn-trace">⚡ TRAZAR</button>
+      <button class="bsm grn" id="btn-export-img">📥 PNG</button>
     </div>
   </div>
 </div>
-  </template>
+<div class="sec">
+  <div class="ai-card">
+    <div class="ai-hdr">
+      <span style="font-size:18px">🔌</span>
+      <span class="ai-ttl" id="tbl-title">PINOUT ECU</span>
+    </div>
+    <div class="tbl-scroll">
+    <table class="wtbl" id="wire-tbl">
+      <thead><tr><th></th><th>PIN · SEÑAL</th><th>COLOR</th><th>VOLTAJE</th><th>TIPO</th></tr></thead>
+      <tbody id="wire-tbody"></tbody>
+    </table>
+    </div>
+    <div class="det-pop" id="det-pop">
+      <div class="det-title" id="det-title"></div>
+      <div class="det-body" id="det-body"></div>
+    </div>
+    <div class="report-txt" id="report-txt">Selecciona un vehículo...</div>
+  </div>
 </div>
+<div class="sec">
+  <div class="export-row">
+    <div class="ebtn blue" id="btn-export">📥 GUARDAR PNG</div>
+    <div class="ebtn purple" id="btn-new">🔄 NUEVO</div>
+  </div>
+</div>
+</div><!-- /result-panel -->
+</div><!-- /diag-mode -->
 
+<!-- ═══════════ PANEL DIAGNÓSTICO POR SONIDO ═══════════ -->
+<div class="audio-panel" id="audio-mode">
+<div class="sec">
 
-    
-  <notification-shelf-watcher data-base-url="https://github.com/notifications/beta/shelf" data-channel="eyJjIjoibm90aWZpY2F0aW9uLWNoYW5nZWQ6MjM0MjI1OTk0IiwidCI6MTc3MzI3MTIxN30=--207809ff6ad8dfa6f0df87ef802291c2e578cfd49d454fd6d9b312daba6dda0d" data-view-component="true" class="js-socket-channel"></notification-shelf-watcher>
-  <div hidden data-initial data-target="notification-shelf-watcher.placeholder"></div>
-
-
-
-
-
-
-  <div
-    class="application-main "
-    data-commit-hovercards-enabled
-    data-discussion-hovercards-enabled
-    data-issue-and-pr-hovercards-enabled
-    data-project-hovercards-enabled
-  >
-      <main>
-        
-<div class="text-center mx-auto m-2" style="width: 630px">
-  <div class="d-flex mb-4 flex-items-center">
-    <h2 class="f2 text-normal flex-auto">Verify your two-factor authentication (2FA) settings</h2>
+  <div class="mic-zone">
+    <div class="mic-btn" id="mic-btn" onclick="toggleRecording()">
+      <span class="mic-ico" id="mic-ico">🎙</span>
+    </div>
+    <div class="mic-label" id="mic-label">TOCA PARA ESCUCHAR</div>
+    <div class="mic-sub" id="mic-sub">Acerca el teléfono al motor encendido<br>Graba 5-15 segundos para mejor diagnóstico</div>
+    <div class="mic-timer" id="mic-timer">00:00</div>
   </div>
 
-  <div class="auth-form-body mb-4" style="padding: 30px">
+  <!-- Audio Visualization -->
+  <div class="audio-viz" id="audio-viz" style="display:none">
+    <canvas id="wave-canvas"></canvas>
+    <canvas id="spec-canvas"></canvas>
+    <div class="viz-label">ONDA DE AUDIO</div>
+    <div class="viz-label2">ESPECTRO DE FRECUENCIAS</div>
+  </div>
 
-    <div class="d-flex flex-column flex-auto mb-4">
-      <div class="d-flex flex-justify-center mb-2">
-        <img img_class="avatar" src="https://avatars.githubusercontent.com/u/234225994?s=100&amp;v=4" width="50" height="50" alt="@84-fmill-mel30" class=" avatar-user" />
+  <!-- Audio Stats -->
+  <div class="audio-stats" id="audio-stats" style="display:none">
+    <div class="astat">
+      <div class="astat-val" id="stat-freq" style="color:var(--cyan)">—</div>
+      <div class="astat-lbl">FREQ DOM (Hz)</div>
+    </div>
+    <div class="astat">
+      <div class="astat-val" id="stat-db" style="color:var(--green)">—</div>
+      <div class="astat-lbl">NIVEL (dB)</div>
+    </div>
+    <div class="astat">
+      <div class="astat-val" id="stat-rpm" style="color:var(--gold)">—</div>
+      <div class="astat-lbl">RPM EST.</div>
+    </div>
+  </div>
+
+  <!-- Diagnosis Results -->
+  <div class="diag-results" id="diag-results"></div>
+
+  <!-- AI Analysis -->
+  <div class="ai-audio-card" id="ai-audio-card">
+    <div class="ai-hdr">
+      <span style="font-size:18px">🤖</span>
+      <span class="ai-ttl">ANÁLISIS IA · DIAGNÓSTICO POR SONIDO</span>
+    </div>
+    <div class="ai-audio-txt" id="ai-audio-txt">Analizando...</div>
+  </div>
+
+  <!-- Sound Guide -->
+  <div class="ai-card" style="margin-top:9px">
+    <div class="ai-hdr">
+      <span style="font-size:16px">📖</span>
+      <span class="ai-ttl">GUÍA DE SONIDOS AUTOMOTRICES</span>
+    </div>
+    <div id="sound-guide"></div>
+  </div>
+
+</div>
+</div><!-- /audio-mode -->
+
+</div><!-- /main -->
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  PROPART · ANALIZADOR DIAGRAMAS + DIAGNÓSTICO POR SONIDO
+//  DATESEG MX · Fernando Millán — 2026
+// ═══════════════════════════════════════════════════════════════
+
+const API = 'https://api.anthropic.com/v1/messages';
+const MDL_KEY = 'pp_api_key';
+const MDL = 'claude-sonnet-4-20250514';
+
+function getApiKey() { return document.getElementById('api-key-input')?.value.trim() || localStorage.getItem(MDL_KEY) || ''; }
+function saveApiKey(k) { if (k) localStorage.setItem(MDL_KEY, k); }
+function toggleKeyVis() { const i=document.getElementById('api-key-input'); i.type=i.type==='password'?'text':'password'; }
+
+// ═══════════════════════════════════════════════════════════════
+//  MODE SWITCHING
+// ═══════════════════════════════════════════════════════════════
+function switchMode(mode) {
+  document.querySelectorAll('.mtab').forEach(t => t.classList.toggle('on', t.dataset.mode === mode));
+  document.getElementById('diag-mode').style.display = mode === 'diag' ? 'block' : 'none';
+  document.getElementById('audio-mode').style.display = mode === 'audio' ? 'block' : 'none';
+  if (mode === 'audio') buildSoundGuide();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  COLOR PALETTES
+// ═══════════════════════════════════════════════════════════════
+const TYPE_COLORS = {
+  'ACT': { hex:'#26C6DA', glow:'#26C6DA55', label:'Actuador', ico:'⚙️' },
+  'SEN': { hex:'#00C853', glow:'#00C85355', label:'Sensor', ico:'📡' },
+  'PWR': { hex:'#FF3B3B', glow:'#FF000066', label:'Alimentación', ico:'🔋' },
+  'GND': { hex:'#607D8B', glow:'#607D8B44', label:'Tierra', ico:'⏚' },
+  'COM': { hex:'#AB47BC', glow:'#AB47BC55', label:'Comunicación', ico:'📶' },
+};
+const VOLT_PALETTE = {
+  '12V':{ hex:'#FF3B3B', label:'12V Batería' }, '5V':{ hex:'#FF8F00', label:'5V Ref' },
+  'GND':{ hex:'#607D8B', label:'Tierra' }, 'CAN-H':{ hex:'#AB47BC', label:'CAN High' },
+  'CAN-L':{ hex:'#7C4DFF', label:'CAN Low' }, 'PWM':{ hex:'#00C853', label:'PWM' },
+  'INJ':{ hex:'#26C6DA', label:'Inyector' }, 'O2':{ hex:'#EC407A', label:'Lambda' },
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  SOUND DIAGNOSTIC CATALOG
+// ═══════════════════════════════════════════════════════════════
+const SOUND_DB = [
+  { id:'knock', name:'Golpeteo / Cascabeleo', ico:'💥', freqRange:[800,3000],
+    priority:'high', color:'var(--red)',
+    desc:'Sonido metálico rítmico que aumenta con RPM. Puede indicar detonación, biela dañada o cojinetes gastados.',
+    causes:['Detonación (usar octanaje correcto)','Biela o cojinetes gastados','Sensor Knock fallando (P0325)','Cadena de distribución estirada'],
+    check:['Verificar código P0325/P0327','Medir presión de aceite en caliente','Escuchar con estetoscopio mecánico en block','Revisar holgura de cadena/banda de distribución'],
+    related:['CKP','Knock sensor','Presión aceite'] },
+  { id:'tick', name:'Tictac / Taqueteo', ico:'🔨', freqRange:[200,800],
+    priority:'med', color:'var(--gold)',
+    desc:'Clic-clic rítmico proporcional a RPM. Generalmente del tren de válvulas — buzos, balancines o inyectores.',
+    causes:['Buzos hidráulicos sin presión','Holgura excesiva en válvulas','Inyectores (sonido normal)','Falta de aceite o aceite viejo'],
+    check:['Verificar nivel y calidad de aceite','Escuchar si desaparece en caliente','Medir holgura de válvulas con calibrador','Separar sonido de inyectores con estetoscopio'],
+    related:['ECT','Presión aceite','IAC'] },
+  { id:'squeal', name:'Chirrido / Rechinido', ico:'🔊', freqRange:[1500,6000],
+    priority:'med', color:'var(--gold)',
+    desc:'Sonido agudo continuo o intermitente. Típico de bandas, poleas o sistema de frenos.',
+    causes:['Banda serpentina gastada o floja','Tensor de banda débil','Polea de alternador o bomba de agua','Balatas de freno gastadas'],
+    check:['Inspeccionar grietas en banda serpentina','Probar tensión con dedo (deflexión 10mm)','Rociar agua en banda — si calla, es la banda','Revisar espesor de balatas (mín 3mm)'],
+    related:['Alternador','Bomba de agua','Sistema de frenos'] },
+  { id:'whine', name:'Zumbido / Lloriqueo', ico:'🎵', freqRange:[500,3000],
+    priority:'med', color:'var(--gold)',
+    desc:'Sonido agudo que sube con RPM. Puede ser alternador, bomba de dirección hidráulica o diferencial.',
+    causes:['Alternador con rodamientos gastados','Bomba de dirección hidráulica baja de fluido','Rodamiento de rueda dañado','Diferencial bajo de aceite'],
+    check:['Medir voltaje de carga (13.5-14.5V)','Verificar nivel de fluido dirección','Girar ruedas a mano — sentir rugosidad','Revisar nivel de aceite diferencial'],
+    related:['Alternador','VSS','Sistema eléctrico'] },
+  { id:'rumble', name:'Retumbo / Vibración', ico:'🌊', freqRange:[30,200],
+    priority:'low', color:'var(--green)',
+    desc:'Vibración profunda o ronroneo áspero. Puede ser escape, soporte de motor o desbalanceo.',
+    causes:['Fuga en sistema de escape','Soporte de motor roto','Bujías fallando (misfire)','Inyector tapado o sin pulso'],
+    check:['Inspeccionar escape visual y auditivo','Acelerar en Drive con freno — ver movimiento motor','Revisar bujías y gap (0.8-1.1mm)','Medir pulso de inyector con noid light'],
+    related:['O2 sensor','CKP','MAF','Bobina encendido'] },
+  { id:'hiss', name:'Silbido / Siseo', ico:'💨', freqRange:[2000,8000],
+    priority:'high', color:'var(--red)',
+    desc:'Silbido continuo del motor. Casi siempre fuga de vacío o fuga de refrigerante bajo presión.',
+    causes:['Fuga de vacío en manguera o colector','Fuga de refrigerante (radiador/manguera)','Empaque de colector de admisión dañado','Válvula PCV rota o manguera agrietada'],
+    check:['Buscar con spray carburador alrededor de colector','Presurizar sistema de enfriamiento','Verificar DTC P0171 (mezcla pobre)','Inspeccionar mangueras de vacío agrietadas'],
+    related:['MAP','MAF','TPS','ECT'] },
+  { id:'grind', name:'Rechinado / Molienda', ico:'⚙️', freqRange:[300,2000],
+    priority:'high', color:'var(--red)',
+    desc:'Sonido áspero de metal contra metal. Urgente — puede ser frenos, transmisión o arrancador.',
+    causes:['Balatas de freno totalmente gastadas','Sincronizadores de transmisión dañados','Arrancador con bendix pegado','Rodamiento de clutch/collarín gastado'],
+    check:['Inspeccionar discos de freno (rayaduras profundas)','Verificar entrada de cambios en frío/caliente','Probar arrancador fuera del motor','Escuchar al pisar/soltar clutch en neutral'],
+    related:['VSS','Sistema de frenos','Transmisión'] },
+  { id:'click_start', name:'Clic al Arrancar', ico:'🔑', freqRange:[50,500],
+    priority:'high', color:'var(--red)',
+    desc:'Clic-clic-clic al girar llave sin que arranque. Batería baja, marcha o conexiones flojas.',
+    causes:['Batería descargada o muerta','Terminales de batería sulfatados','Motor de arranque (marcha) dañado','Relé de arranque fallando'],
+    check:['Medir voltaje batería (mín 12.4V)','Limpiar terminales con bicarbonato','Golpear marcha suavemente y reintentar','Puentear relé de arranque para probar'],
+    related:['Batería','Alternador','Sistema arranque'] },
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  VEHICLE DATABASE
+// ═══════════════════════════════════════════════════════════════
+const DB = { vehicles: {
+  'nissan_sentra_b14': {
+    brand:'NISSAN', model:'SENTRA B14', version:'1995-1999', engine:'GA16DE 1.6L',
+    ecu:'ECM Nissan GA16DE · 76 Pines', pines:76, fuel:'Gasolina',
+    sistema:'Inyección MPFI — Control de Motor',
+    descripcion:'ECU Hitachi 76 pines. 4 inyectores, bobinas, IAC, sensor CAS óptico. Muy popular en México.',
+    pinout:[
+      {p:1,  s:'Bobina Cil.1',    c:'Rojo/Negro',    h:'#CC2222',col2:'#111',    v:'0-12V pulso',      t:'ACT', dest:'Bobina cil.1 via F4 15A'},
+      {p:2,  s:'Bobina Cil.2',    c:'Rojo/Azul',     h:'#CC2222',col2:'#1155CC', v:'0-12V pulso',      t:'ACT', dest:'Bobina cil.2'},
+      {p:3,  s:'Bobina Cil.3',    c:'Rojo/Blanco',   h:'#CC2222',col2:'#EEE',    v:'0-12V pulso',      t:'ACT', dest:'Bobina cil.3'},
+      {p:4,  s:'Bobina Cil.4',    c:'Rojo/Verde',    h:'#CC2222',col2:'#228822', v:'0-12V pulso',      t:'ACT', dest:'Bobina cil.4'},
+      {p:11, s:'Inyector Cil.1',   c:'Azul/Rojo',     h:'#1155CC',col2:'#CC2222', v:'0-12V pulso',      t:'ACT', dest:'Inyector cil.1 via F2 15A'},
+      {p:12, s:'Inyector Cil.2',   c:'Azul/Blanco',   h:'#1155CC',col2:'#EEE',    v:'0-12V pulso',      t:'ACT', dest:'Inyector cil.2'},
+      {p:13, s:'Inyector Cil.3',   c:'Azul/Negro',    h:'#1155CC',col2:'#111',    v:'0-12V pulso',      t:'ACT', dest:'Inyector cil.3'},
+      {p:14, s:'Inyector Cil.4',   c:'Azul/Verde',    h:'#1155CC',col2:'#228822', v:'0-12V pulso',      t:'ACT', dest:'Inyector cil.4'},
+      {p:21, s:'CAS señal 1°',     c:'Verde/Negro',   h:'#228822',col2:'#111',    v:'0-5V AC',          t:'SEN', dest:'Distribuidor óptico'},
+      {p:22, s:'CAS señal 180°',   c:'Verde/Blanco',  h:'#228822',col2:'#EEE',    v:'0-5V AC',          t:'SEN', dest:'Distribución 180°'},
+      {p:31, s:'MAF señal',        c:'Amarillo/Negro', h:'#DDCC00',col2:'#111',   v:'1.0-5.0V',         t:'SEN', dest:'Flujo aire g/s'},
+      {p:32, s:'MAF 12V',          c:'Blanco/Rojo',   h:'#EEEEEE',col2:'#CC2222', v:'12V',              t:'PWR', dest:'Relé principal via F3'},
+      {p:33, s:'Tierra MAF',       c:'Negro',         h:'#222222',col2:'#222',    v:'0V',               t:'GND', dest:'Tierra MAF'},
+      {p:41, s:'TPS señal',        c:'Verde/Rojo',    h:'#228822',col2:'#CC2222', v:'0.5-4.5V',         t:'SEN', dest:'Posición mariposa'},
+      {p:42, s:'VREF TPS 5V',      c:'Gris/Rojo',     h:'#888888',col2:'#CC2222', v:'5V ref',           t:'PWR', dest:'Vref ECU'},
+      {p:43, s:'Tierra TPS',       c:'Negro/Blanco',  h:'#222222',col2:'#EEE',    v:'0V',               t:'GND', dest:'Tierra TPS'},
+      {p:44, s:'ECT señal',        c:'Verde/Azul',    h:'#228833',col2:'#1155CC', v:'NTC 0.3-4.8V',     t:'SEN', dest:'Temp motor NTC'},
+      {p:45, s:'Sonda O2 B1S1',    c:'Azul/Amarillo', h:'#1155CC',col2:'#DDCC00', v:'0.1-0.9V',         t:'SEN', dest:'Lambda via F6'},
+      {p:51, s:'VREF 5V sensores', c:'Gris',          h:'#888888',col2:'#888',    v:'5V exacto',        t:'PWR', dest:'Vref MAP/ECT/TPS'},
+      {p:52, s:'Tierra señal',     c:'Negro/Azul',    h:'#222222',col2:'#1155CC', v:'0V limpio',        t:'GND', dest:'Masa sensores'},
+      {p:53, s:'IAC control',      c:'Naranja/Blanco',h:'#DD7722',col2:'#EEE',    v:'PWM 30-55Hz',      t:'ACT', dest:'Ralentí via F7'},
+      {p:61, s:'Relé bomba',       c:'Negro/Amarillo',h:'#222222',col2:'#DDCC00', v:'0V/12V',           t:'ACT', dest:'Relé bomba R2'},
+      {p:62, s:'Alim. IGN ON',     c:'Rojo/Amarillo', h:'#CC4422',col2:'#DDCC00', v:'12V llave',        t:'PWR', dest:'Ignición via F1'},
+      {p:63, s:'Tierra chasis',    c:'Negro',         h:'#222222',col2:'#222',    v:'0V',               t:'GND', dest:'Tierra potencia'},
+      {p:64, s:'Batería ECM',      c:'Blanco',        h:'#EEEEEE',col2:'#EEE',    v:'12V const',        t:'PWR', dest:'Memoria via F1'},
+      {p:71, s:'VSS velocidad',    c:'Verde/Amarillo',h:'#228822',col2:'#DDCC00', v:'0-12V pulso',      t:'SEN', dest:'Velocidad'},
+      {p:72, s:'K-Line diag',      c:'Azul/Verde',    h:'#1155CC',col2:'#228822', v:'K-Line',           t:'COM', dest:'OBD-II'},
+      {p:73, s:'Knock sensor',     c:'Gris/Azul',     h:'#888888',col2:'#1155CC', v:'AC mV',            t:'SEN', dest:'Detonación'},
+      {p:74, s:'Check Engine',     c:'Naranja',       h:'#DD7722',col2:'#DD7722', v:'0V activa',        t:'ACT', dest:'MIL tablero'},
+      {p:76, s:'IACV feedback',    c:'Naranja/Negro', h:'#DD7722',col2:'#111',    v:'0-5V',             t:'SEN', dest:'Posición IAC'},
+    ],
+    notas:['CAS óptico en distribuidor — limpia disco','TPS lineal sin saltos','O2 oscilar rápido en caliente','IAC 20-30Ω bobinas','VREF <4.8V = cortocircuito arnés'],
+    fallas:['P0335 — CKP: Pin 21/22 continuidad','P0171 — Pobre: O2 Pin45, MAF Pin31','P0120 — TPS: Pin41/42/43','P0505 — IAC: Pin53 PWM','P0325 — Knock: Pin73 torque 20Nm']
+  },
+  'nissan_tsuru_b13': {
+    brand:'NISSAN', model:'TSURU B13', version:'1992-2017', engine:'GA16DNE 1.6L',
+    ecu:'ECM Hitachi · 48 Pines', pines:48, fuel:'Gasolina',
+    sistema:'MPFI Simplificada', descripcion:'ECU 48 pines Tsuru III. El más vendido en México.',
+    pinout:[
+      {p:1,  s:'Alim +B const',    c:'Blanco/Rojo',   h:'#EEEEEE',col2:'#CC2222', v:'12V bat',    t:'PWR', dest:'Fusible 10A'},
+      {p:2,  s:'Alim IGN ON',      c:'Negro/Blanco',  h:'#222222',col2:'#EEE',    v:'12V llave',  t:'PWR', dest:'Switch ignición'},
+      {p:3,  s:'Tierra ECM',       c:'Negro',         h:'#222222',col2:'#222',    v:'0V',         t:'GND', dest:'Block motor'},
+      {p:10, s:'CKP (CAS) señal',  c:'Verde/Negro',   h:'#228822',col2:'#111',    v:'0-5V cuad',  t:'SEN', dest:'Sensor óptico distrib'},
+      {p:11, s:'CMP referencia',   c:'Verde/Blanco',  h:'#228822',col2:'#EEE',    v:'0-5V cuad',  t:'SEN', dest:'PMS distribuidor'},
+      {p:15, s:'TPS señal',        c:'Verde/Rojo',    h:'#228822',col2:'#CC2222', v:'0.5-4.5V',   t:'SEN', dest:'Mariposa'},
+      {p:16, s:'VREF 5V',          c:'Gris',          h:'#888888',col2:'#888',    v:'5.0V',       t:'PWR', dest:'VREF TPS/ECT'},
+      {p:17, s:'Tierra señal',     c:'Negro/Azul',    h:'#222222',col2:'#1155CC', v:'0V',         t:'GND', dest:'Masa sensores'},
+      {p:20, s:'ECT señal',        c:'Verde/Azul',    h:'#228833',col2:'#1155CC', v:'NTC 0.3-4.8V',t:'SEN', dest:'Temp motor'},
+      {p:25, s:'Inyectores 1-4',   c:'Azul',          h:'#1155CC',col2:'#1155CC', v:'12V pulso',  t:'ACT', dest:'4 inj simultáneo'},
+      {p:30, s:'Bobina ignición',  c:'Rojo/Negro',    h:'#CC2222',col2:'#111',    v:'0-12V',      t:'ACT', dest:'Módulo DIS'},
+      {p:35, s:'IAC control',      c:'Naranja',       h:'#DD7722',col2:'#DD7722', v:'PWM',        t:'ACT', dest:'Válvula ralentí'},
+      {p:38, s:'Sonda O2',         c:'Azul/Amarillo', h:'#1155CC',col2:'#DDCC00', v:'0.1-0.9V',   t:'SEN', dest:'Lambda B1S1'},
+      {p:40, s:'Relé bomba',       c:'Negro/Amarillo',h:'#222222',col2:'#DDCC00', v:'0V activa',  t:'ACT', dest:'Relé bomba'},
+      {p:42, s:'Check Engine',     c:'Verde/Rojo',    h:'#228833',col2:'#CC2222', v:'0V enciende',t:'ACT', dest:'Tablero'},
+      {p:45, s:'VSS velocidad',    c:'Verde/Amarillo',h:'#228822',col2:'#DDCC00', v:'0-12V',      t:'SEN', dest:'Velocidad'},
+      {p:48, s:'K-Line diag',      c:'Azul/Verde',    h:'#1155CC',col2:'#228822', v:'K-Line',     t:'COM', dest:'Consult OBD-I'},
+    ],
+    notas:['Inyección simultánea (4 al mismo tiempo)','CAS óptico: sin señal = no arranca','ECT: frío alto V, caliente bajo V'],
+    fallas:['P0335 — CAS: limpiar disco óptico Pin 10','P0120 — TPS: Pin15/16/17','P0505 — IAC: Pin35 limpiar']
+  },
+  'vw_golf_a4': {
+    brand:'VOLKSWAGEN', model:'GOLF A4', version:'2001-2006', engine:'2.0L 8V',
+    ecu:'Motronic ME7.5 · 121 Pines', pines:121, fuel:'Gasolina',
+    sistema:'Motronic ME7.5', descripcion:'Bosch ME7.5, 121 pines. IMMO WFS III integrado.',
+    pinout:[
+      {p:1,  s:'Corriente +30',    c:'Rojo/Negro',    h:'#CC2222',col2:'#111',    v:'12.6V',      t:'PWR', dest:'Batería directa'},
+      {p:2,  s:'Tierra potencia',  c:'Café',          h:'#6D4C41',col2:'#6D4C41', v:'0V',         t:'GND', dest:'Masa motor'},
+      {p:3,  s:'Tierra señales',   c:'Café/Blanco',   h:'#6D4C41',col2:'#EEE',    v:'0V',         t:'GND', dest:'Masa referencia'},
+      {p:10, s:'CKP señal',        c:'Verde/Negro',   h:'#228822',col2:'#111',    v:'AC 0.5-100V', t:'SEN', dest:'Cigüeñal 60-2'},
+      {p:15, s:'CMP Hall',         c:'Gris/Azul',     h:'#888888',col2:'#1155CC', v:'0-5V Hall',  t:'SEN', dest:'Árbol de levas'},
+      {p:20, s:'TPS señal',        c:'Amarillo/Verde',h:'#DDCC00',col2:'#228822', v:'0.5-4.5V',   t:'SEN', dest:'Mariposa'},
+      {p:21, s:'VREF 5V',          c:'Gris',          h:'#888888',col2:'#888',    v:'5.0V',       t:'PWR', dest:'Alim sensores'},
+      {p:25, s:'ECT señal',        c:'Verde/Café',    h:'#228833',col2:'#6D4C41', v:'NTC',        t:'SEN', dest:'Temp motor'},
+      {p:30, s:'MAF señal',        c:'Amarillo',      h:'#DDCC00',col2:'#DDCC00', v:'0.5-4.8V',   t:'SEN', dest:'Flujo aire'},
+      {p:40, s:'O2 upstream',      c:'Negro/Violeta', h:'#222222',col2:'#AB47BC', v:'0.1-0.9V',   t:'SEN', dest:'Lambda B1S1'},
+      {p:50, s:'Inyector Cil.1',   c:'Azul/Blanco',   h:'#1155CC',col2:'#EEE',    v:'12V pulso',  t:'ACT', dest:'Inyector cil.1'},
+      {p:51, s:'Inyector Cil.2',   c:'Azul/Rojo',     h:'#1155CC',col2:'#CC2222', v:'12V pulso',  t:'ACT', dest:'Inyector cil.2'},
+      {p:52, s:'Inyector Cil.3',   c:'Azul/Verde',    h:'#1155CC',col2:'#228822', v:'12V pulso',  t:'ACT', dest:'Inyector cil.3'},
+      {p:53, s:'Inyector Cil.4',   c:'Azul/Amarillo', h:'#1155CC',col2:'#DDCC00', v:'12V pulso',  t:'ACT', dest:'Inyector cil.4'},
+      {p:60, s:'Bobina 1-4 DIS',   c:'Rojo/Blanco',   h:'#CC2222',col2:'#EEE',    v:'0-400V',     t:'ACT', dest:'Bobina DIS'},
+      {p:70, s:'IAC motor paso',   c:'Naranja',       h:'#DD7722',col2:'#DD7722', v:'PWM 200Hz',  t:'ACT', dest:'Ralentí'},
+      {p:90, s:'Check Engine',     c:'Verde/Rojo',    h:'#228833',col2:'#CC2222', v:'0V enciende',t:'ACT', dest:'MIL tablero'},
+      {p:110,s:'CAN High',         c:'Naranja/Negro', h:'#DD7722',col2:'#111',    v:'2.5-3.5V',   t:'COM', dest:'CAN gateway'},
+      {p:111,s:'CAN Low',          c:'Naranja/Café',  h:'#DD7722',col2:'#6D4C41', v:'1.5-2.5V',   t:'COM', dest:'CAN gateway'},
+      {p:120,s:'IMMO WFS III',     c:'Violeta/Blanco',h:'#AB47BC',col2:'#EEE',    v:'Datos serial',t:'COM', dest:'Tablero IMMO'},
+    ],
+    notas:['CKP inductivo 60-2 — amplitud proporcional a RPM','ME7.5 codificación con VCDS','IMMO WFS III: sin llave NO inyecta'],
+    fallas:['P0322 — CKP: gap 0.8-1mm, R 800-1000Ω','P0341 — CMP: Hall 5V','P0300 — Misfire: bobinas DIS','P0171 — Pobre: MAF sucio']
+  },
+  'chevy_aveo': {
+    brand:'CHEVROLET', model:'AVEO', version:'2006-2011', engine:'1.6L F16D3',
+    ecu:'Delphi MT80 · 80 Pines', pines:80, fuel:'Gasolina',
+    sistema:'Inyección Secuencial Delphi', descripcion:'Delphi MT80, CAN Bus con BCM.',
+    pinout:[
+      {p:1,  s:'Alim +30',         c:'Rojo',          h:'#CC2222',col2:'#CC2222', v:'12V const',  t:'PWR', dest:'Batería'},
+      {p:2,  s:'Tierra potencia',  c:'Negro',         h:'#222222',col2:'#222',    v:'0V',         t:'GND', dest:'Block motor'},
+      {p:10, s:'CKP señal',        c:'Azul/Blanco',   h:'#1155CC',col2:'#EEE',    v:'AC 0.3-50V', t:'SEN', dest:'Cigüeñal 58-2'},
+      {p:15, s:'CMP Hall',         c:'Gris/Negro',    h:'#888888',col2:'#111',    v:'0-5V Hall',  t:'SEN', dest:'Árbol levas'},
+      {p:20, s:'TPS señal',        c:'Amarillo',      h:'#DDCC00',col2:'#DDCC00', v:'0.5-4.5V',   t:'SEN', dest:'Mariposa'},
+      {p:21, s:'MAP señal',        c:'Verde',         h:'#228822',col2:'#228822', v:'1.0-4.5V',   t:'SEN', dest:'Presión colector'},
+      {p:22, s:'ECT señal',        c:'Verde/Amarillo',h:'#228833',col2:'#DDCC00', v:'NTC',        t:'SEN', dest:'Temp motor'},
+      {p:25, s:'O2 upstream',      c:'Violeta',       h:'#AB47BC',col2:'#AB47BC', v:'0.1-0.9V',   t:'SEN', dest:'Lambda B1S1'},
+      {p:30, s:'VREF 5V',          c:'Gris',          h:'#888888',col2:'#888',    v:'5.0V',       t:'PWR', dest:'VREF TPS/MAP'},
+      {p:32, s:'Tierra señal',     c:'Negro/Azul',    h:'#222222',col2:'#1155CC', v:'0V',         t:'GND', dest:'Masa sensores'},
+      {p:40, s:'Inyector Cil.1',   c:'Azul/Rojo',     h:'#1155CC',col2:'#CC2222', v:'12V pulso',  t:'ACT', dest:'Inyector cil.1'},
+      {p:41, s:'Inyector Cil.2',   c:'Azul/Blanco',   h:'#1155CC',col2:'#EEE',    v:'12V pulso',  t:'ACT', dest:'Inyector cil.2'},
+      {p:42, s:'Inyector Cil.3',   c:'Azul/Verde',    h:'#1155CC',col2:'#228822', v:'12V pulso',  t:'ACT', dest:'Inyector cil.3'},
+      {p:43, s:'Inyector Cil.4',   c:'Azul/Amarillo', h:'#1155CC',col2:'#DDCC00', v:'12V pulso',  t:'ACT', dest:'Inyector cil.4'},
+      {p:50, s:'Bobina COP 1-4',   c:'Rojo/Blanco',   h:'#CC2222',col2:'#EEE',    v:'0-12V',      t:'ACT', dest:'COP bobina'},
+      {p:55, s:'IAC paso a paso',  c:'Naranja',       h:'#DD7722',col2:'#DD7722', v:'PWM bipolar',t:'ACT', dest:'Ralentí'},
+      {p:65, s:'CAN High',         c:'Naranja/Negro', h:'#DD7722',col2:'#111',    v:'2.5-3.5V',   t:'COM', dest:'CAN BCM'},
+      {p:66, s:'CAN Low',          c:'Naranja/Café',  h:'#DD7722',col2:'#6D4C41', v:'1.5-2.5V',   t:'COM', dest:'CAN BCM'},
+      {p:70, s:'Check Engine',     c:'Verde/Rojo',    h:'#228833',col2:'#CC2222', v:'0V enciende',t:'ACT', dest:'Tablero'},
+      {p:75, s:'Knock sensor',     c:'Gris/Azul',     h:'#888888',col2:'#1155CC', v:'AC mV',      t:'SEN', dest:'Detonación'},
+      {p:80, s:'Alim IGN',         c:'Rojo/Blanco',   h:'#CC2222',col2:'#EEE',    v:'12V llave',  t:'PWR', dest:'Ignición ON'},
+    ],
+    notas:['CKP inductivo 58-2 — gap 0.5-1.0mm — R 500-700Ω','MAP ralentí 1.0-1.5V, WOT 4.0-4.5V'],
+    fallas:['P0335 — CKP: R y gap Pin10/11','P0107 — MAP bajo: Pin21, vacío, 5V ref','P0300 — Misfire: COP, bujías']
+  },
+}};
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+const S = {
+  imgData:null, imgMime:'image/jpeg', imgEl:null,
+  result:null, wires:[], activeFilter:'ALL',
+  viewMode:'schematic', zoom:1, canW:0, canH:0,
+  selectedVeh:null, source:null
+};
+
+// Audio state
+const AUD = {
+  ctx:null, analyser:null, stream:null, source:null,
+  recording:false, startTime:0, timerInt:null,
+  freqData:null, timeData:null, animFrame:null,
+  history:[], peakFreq:0, avgDb:0, estRPM:0
+};
+
+const canDiag=document.getElementById('diag-canvas');
+const canOverlay=document.getElementById('overlay-canvas');
+const canHit=document.getElementById('hit-canvas');
+const cx=canDiag.getContext('2d');
+const cx2=canOverlay.getContext('2d');
+const cx3=canHit.getContext('2d');
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(MDL_KEY);
+  if (saved) document.getElementById('api-key-input').value = saved;
+  populateVehicles(); initDrop(); initViewTabs(); initZoom(); initFilters(); renderLegend();
+  // Resize audio canvases
+  const wc = document.getElementById('wave-canvas');
+  const sc = document.getElementById('spec-canvas');
+  if (wc) { wc.width = wc.parentElement.clientWidth || 480; wc.height = 80; }
+  if (sc) { sc.width = sc.parentElement.clientWidth || 480; sc.height = 100; }
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  AUDIO DIAGNOSTIC ENGINE
+// ═══════════════════════════════════════════════════════════════
+async function toggleRecording() {
+  if (AUD.recording) { stopRecording(); return; }
+  try {
+    AUD.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation:false, noiseSuppression:false, autoGainControl:false }});
+    AUD.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    AUD.analyser = AUD.ctx.createAnalyser();
+    AUD.analyser.fftSize = 2048;
+    AUD.analyser.smoothingTimeConstant = 0.8;
+    AUD.source = AUD.ctx.createMediaStreamSource(AUD.stream);
+    AUD.source.connect(AUD.analyser);
+
+    AUD.freqData = new Uint8Array(AUD.analyser.frequencyBinCount);
+    AUD.timeData = new Uint8Array(AUD.analyser.fftSize);
+    AUD.history = [];
+    AUD.recording = true;
+    AUD.startTime = Date.now();
+
+    const btn = document.getElementById('mic-btn');
+    btn.classList.add('recording');
+    document.getElementById('mic-ico').textContent = '⏹';
+    document.getElementById('mic-label').textContent = 'GRABANDO...';
+    document.getElementById('mic-sub').textContent = 'Acerca al motor · Toca para detener';
+    document.getElementById('mic-timer').classList.add('rec');
+    document.getElementById('audio-viz').style.display = 'block';
+    document.getElementById('audio-stats').style.display = 'grid';
+    document.getElementById('diag-results').style.display = 'none';
+    document.getElementById('ai-audio-card').style.display = 'none';
+
+    // Resize canvases now that visible
+    const wc = document.getElementById('wave-canvas');
+    const sc = document.getElementById('spec-canvas');
+    wc.width = wc.parentElement.clientWidth; wc.height = 80;
+    sc.width = sc.parentElement.clientWidth; sc.height = 100;
+
+    AUD.timerInt = setInterval(updateTimer, 100);
+    drawAudio();
+    toast('🎙 Grabando sonido...', 'info');
+
+  } catch(err) {
+    toast('❌ No se pudo acceder al micrófono', 'err', 4000);
+  }
+}
+
+function stopRecording() {
+  AUD.recording = false;
+  if (AUD.stream) AUD.stream.getTracks().forEach(t => t.stop());
+  if (AUD.ctx) AUD.ctx.close();
+  clearInterval(AUD.timerInt);
+  cancelAnimationFrame(AUD.animFrame);
+
+  const btn = document.getElementById('mic-btn');
+  btn.classList.remove('recording');
+  btn.classList.add('analyzing');
+  document.getElementById('mic-ico').textContent = '🔍';
+  document.getElementById('mic-label').textContent = 'ANALIZANDO...';
+  document.getElementById('mic-sub').textContent = 'Procesando patrones de sonido...';
+  document.getElementById('mic-timer').classList.remove('rec');
+
+  setTimeout(() => {
+    analyzeAudio();
+    btn.classList.remove('analyzing');
+    document.getElementById('mic-ico').textContent = '🎙';
+    document.getElementById('mic-label').textContent = 'TOCA PARA ESCUCHAR DE NUEVO';
+    document.getElementById('mic-sub').textContent = 'Resultado del diagnóstico abajo';
+  }, 800);
+}
+
+function updateTimer() {
+  const elapsed = Math.floor((Date.now() - AUD.startTime) / 1000);
+  const m = String(Math.floor(elapsed/60)).padStart(2,'0');
+  const s = String(elapsed%60).padStart(2,'0');
+  document.getElementById('mic-timer').textContent = `${m}:${s}`;
+}
+
+function drawAudio() {
+  if (!AUD.recording) return;
+  AUD.animFrame = requestAnimationFrame(drawAudio);
+
+  AUD.analyser.getByteTimeDomainData(AUD.timeData);
+  AUD.analyser.getByteFrequencyData(AUD.freqData);
+
+  const wc = document.getElementById('wave-canvas');
+  const sc = document.getElementById('spec-canvas');
+  const wctx = wc.getContext('2d');
+  const sctx = sc.getContext('2d');
+  const W = wc.width, WH = wc.height;
+  const SW = sc.width, SH = sc.height;
+
+  // ── Waveform ──
+  wctx.fillStyle = 'rgba(5,11,20,0.3)';
+  wctx.fillRect(0,0,W,WH);
+  wctx.strokeStyle = '#00D4E8';
+  wctx.lineWidth = 1.5;
+  wctx.shadowColor = '#00D4E855';
+  wctx.shadowBlur = 4;
+  wctx.beginPath();
+  const sliceW = W / AUD.timeData.length;
+  for (let i=0; i<AUD.timeData.length; i++) {
+    const v = AUD.timeData[i] / 128.0;
+    const y = v * WH/2;
+    if (i===0) wctx.moveTo(0,y); else wctx.lineTo(i*sliceW, y);
+  }
+  wctx.stroke();
+  wctx.shadowBlur = 0;
+
+  // ── Spectrum ──
+  sctx.fillStyle = 'rgba(5,11,20,0.25)';
+  sctx.fillRect(0,0,SW,SH);
+  const barW = SW / (AUD.freqData.length * 0.25); // show lower half
+  const barsToShow = Math.floor(AUD.freqData.length * 0.25);
+  for (let i=0; i<barsToShow; i++) {
+    const val = AUD.freqData[i];
+    const pct = val / 255;
+    const h = pct * SH;
+    // Color gradient based on frequency
+    const hue = (i/barsToShow) * 280;
+    sctx.fillStyle = `hsla(${hue}, 80%, 55%, ${0.4 + pct*0.6})`;
+    sctx.shadowColor = `hsla(${hue}, 80%, 55%, 0.3)`;
+    sctx.shadowBlur = 3;
+    sctx.fillRect(i*barW, SH-h, barW-1, h);
+  }
+  sctx.shadowBlur = 0;
+
+  // ── Live stats ──
+  // Find peak frequency
+  let maxVal = 0, maxIdx = 0;
+  for (let i=1; i<AUD.freqData.length/2; i++) {
+    if (AUD.freqData[i] > maxVal) { maxVal = AUD.freqData[i]; maxIdx = i; }
+  }
+  const nyquist = AUD.ctx.sampleRate / 2;
+  const peakHz = Math.round(maxIdx * nyquist / AUD.analyser.frequencyBinCount);
+
+  // Average dB
+  let sum = 0;
+  for (let i=0; i<AUD.freqData.length; i++) sum += AUD.freqData[i];
+  const avgLevel = sum / AUD.freqData.length;
+  const db = Math.round(20 * Math.log10(avgLevel / 255 + 0.0001) + 90);
+
+  // Estimate RPM from low freq peaks (engine fires are 30-150Hz range)
+  let lowMax = 0, lowIdx = 0;
+  const maxBin = Math.floor(200 * AUD.analyser.frequencyBinCount / nyquist);
+  const minBin = Math.floor(20 * AUD.analyser.frequencyBinCount / nyquist);
+  for (let i=minBin; i<maxBin; i++) {
+    if (AUD.freqData[i] > lowMax) { lowMax = AUD.freqData[i]; lowIdx = i; }
+  }
+  const lowHz = lowIdx * nyquist / AUD.analyser.frequencyBinCount;
+  const estRPM = Math.round(lowHz * 60 / 2); // 4-stroke: 2 revs per firing
+
+  AUD.peakFreq = peakHz;
+  AUD.avgDb = db;
+  AUD.estRPM = Math.max(0, Math.min(8000, estRPM));
+
+  document.getElementById('stat-freq').textContent = peakHz;
+  document.getElementById('stat-db').textContent = db;
+  document.getElementById('stat-db').style.color = db > 75 ? 'var(--red)' : db > 55 ? 'var(--gold)' : 'var(--green)';
+  document.getElementById('stat-rpm').textContent = estRPM > 200 ? estRPM : '—';
+
+  // Save history for analysis
+  AUD.history.push({ peakHz, db, estRPM, freqs: Array.from(AUD.freqData.slice(0, barsToShow)) });
+  if (AUD.history.length > 200) AUD.history.shift(); // keep last ~20s
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  AUDIO ANALYSIS
+// ═══════════════════════════════════════════════════════════════
+function analyzeAudio() {
+  if (!AUD.history.length) { toast('No hay datos de audio', 'warn'); return; }
+
+  // Calculate averages
+  const avgFreq = Math.round(AUD.history.reduce((s,h) => s+h.peakHz, 0) / AUD.history.length);
+  const avgDb = Math.round(AUD.history.reduce((s,h) => s+h.db, 0) / AUD.history.length);
+  const avgRPM = Math.round(AUD.history.reduce((s,h) => s+h.estRPM, 0) / AUD.history.length);
+
+  // Frequency band analysis
+  const bands = { low:0, mid:0, high:0, vhigh:0 };
+  AUD.history.forEach(h => {
+    h.freqs.forEach((v,i) => {
+      const hz = i * (48000/2) / 1024;  // approximate
+      if (hz < 300) bands.low += v;
+      else if (hz < 1500) bands.mid += v;
+      else if (hz < 4000) bands.high += v;
+      else bands.vhigh += v;
+    });
+  });
+  const total = bands.low + bands.mid + bands.high + bands.vhigh + 1;
+  const pcts = {
+    low: bands.low/total,
+    mid: bands.mid/total,
+    high: bands.high/total,
+    vhigh: bands.vhigh/total
+  };
+
+  // Score each diagnostic pattern
+  const scores = SOUND_DB.map(snd => {
+    let score = 0;
+    const [fLow, fHigh] = snd.freqRange;
+
+    // Frequency match
+    if (avgFreq >= fLow && avgFreq <= fHigh) score += 40;
+    else if (avgFreq >= fLow*0.5 && avgFreq <= fHigh*1.5) score += 15;
+
+    // Band energy match
+    if (fHigh <= 500 && pcts.low > 0.35) score += 25;
+    if (fLow >= 200 && fHigh <= 2000 && pcts.mid > 0.3) score += 20;
+    if (fLow >= 1000 && pcts.high > 0.3) score += 25;
+    if (fLow >= 2000 && pcts.vhigh > 0.25) score += 25;
+
+    // Volume hints
+    if (snd.id === 'grind' && avgDb > 65) score += 15;
+    if (snd.id === 'hiss' && avgDb < 50 && pcts.vhigh > 0.2) score += 15;
+    if (snd.id === 'rumble' && avgDb > 50 && pcts.low > 0.4) score += 20;
+    if (snd.id === 'click_start' && avgDb < 45) score += 10;
+    if (snd.id === 'squeal' && pcts.high > 0.35) score += 20;
+    if (snd.id === 'whine' && pcts.mid > 0.3 && pcts.high > 0.2) score += 15;
+    if (snd.id === 'knock' && pcts.mid > 0.25 && avgDb > 55) score += 15;
+    if (snd.id === 'tick' && pcts.mid > 0.3) score += 15;
+
+    return { ...snd, score: Math.min(score, 95) };
+  });
+
+  scores.sort((a,b) => b.score - a.score);
+
+  // Show results
+  const container = document.getElementById('diag-results');
+  container.style.display = 'block';
+  container.innerHTML = `
+    <div class="box-title" style="margin-bottom:10px">🔍 RESULTADOS DEL DIAGNÓSTICO</div>
+    <div style="font-size:8px;color:var(--lgray);margin-bottom:10px;font-family:'Share Tech Mono',monospace">
+      Freq. dominante: ${avgFreq}Hz · Nivel: ${avgDb}dB · RPM est: ${avgRPM > 200 ? avgRPM : '—'}
+    </div>
+  `;
+
+  // Show top 4 matches
+  scores.slice(0,4).forEach(s => {
+    if (s.score < 10) return;
+    const prio = s.score > 50 ? 'high' : s.score > 25 ? 'med' : 'low';
+    const probLabel = s.score > 50 ? 'PROBABLE' : s.score > 25 ? 'POSIBLE' : 'BAJO';
+    const card = document.createElement('div');
+    card.className = `diag-card ${prio}`;
+    card.innerHTML = `
+      <div class="diag-hdr">
+        <span class="diag-ico">${s.ico}</span>
+        <span class="diag-name">${s.name}</span>
+        <span class="diag-prob" style="color:${s.color}">${s.score}% ${probLabel}</span>
       </div>
-      <div class="text-center">
-        <h3 class="color-fg-default lh-condensed">Fernando Millán Melchor</h3>
-        <h4 class="color-fg-muted lh-condensed text-normal">84-fmill-mel30</h4>
+      <div class="diag-body">
+        ${s.desc}<br><br>
+        <b>Causas posibles:</b><br>
+        ${s.causes.map(c => '• ' + c).join('<br>')}<br><br>
+        <b>Qué revisar:</b><br>
+        ${s.check.map(c => '• ' + c).join('<br>')}
       </div>
-    </div>
+      <div class="diag-tags">
+        ${s.related.map(r => `<span class="diag-tag">${r}</span>`).join('')}
+        <span class="diag-tag red">${s.freqRange[0]}-${s.freqRange[1]}Hz</span>
+      </div>`;
+    container.appendChild(card);
+  });
 
-    <div data-view-component="true" class="flash flash-full mb-4">
-  
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-info float-left v-align-top mt-1 mb-4">
-    <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path>
-</svg>
-      <div class="text-left text-bold">
-        This is a one-time verification of your recently configured 2FA credentials.
-          You can no longer delay 2FA verification, please verify to continue.
+  toast('✅ Diagnóstico por sonido completo', 'ok', 4000);
+
+  // If API key, send to Claude for deeper analysis
+  const key = getApiKey();
+  if (key) sendAudioToIA(avgFreq, avgDb, avgRPM, pcts, scores.slice(0,3));
+}
+
+async function sendAudioToIA(freq, db, rpm, bands, topMatches) {
+  const card = document.getElementById('ai-audio-card');
+  card.style.display = 'block';
+  document.getElementById('ai-audio-txt').textContent = '🤖 Analizando con IA...';
+
+  const veh = S.selectedVeh ? DB.vehicles[S.selectedVeh] : null;
+  const vehInfo = veh ? `${veh.brand} ${veh.model} ${veh.engine} (${veh.version})` : 'Vehículo no especificado';
+
+  const prompt = `Eres un técnico mecánico automotriz experto con 20 años de experiencia diagnosticando fallas por sonido.
+
+DATOS DE AUDIO CAPTURADOS:
+- Vehículo: ${vehInfo}
+- Frecuencia dominante: ${freq}Hz
+- Nivel de sonido: ${db}dB
+- RPM estimado: ${rpm > 200 ? rpm : 'no detectado'}
+- Distribución de bandas:
+  · Bajas (0-300Hz): ${Math.round(bands.low*100)}%
+  · Medias (300-1500Hz): ${Math.round(bands.mid*100)}%
+  · Altas (1500-4000Hz): ${Math.round(bands.high*100)}%
+  · Muy altas (4000Hz+): ${Math.round(bands.vhigh*100)}%
+
+DIAGNÓSTICOS PRELIMINARES:
+${topMatches.map(m => `- ${m.name} (${m.score}%): ${m.desc}`).join('\n')}
+
+Basándote en estos datos de audio, da tu diagnóstico técnico profesional en español mexicano:
+1. Tu opinión experta de qué puede ser el sonido
+2. Qué componentes revisar primero (en orden de prioridad)
+3. Herramientas necesarias para confirmar el diagnóstico
+4. Si es urgente o puede esperar
+5. Costo estimado de reparación aproximado en pesos mexicanos
+
+Responde de forma clara y directa, como le hablarías a un técnico en el taller. Máximo 300 palabras.`;
+
+  try {
+    const res = await fetch(API, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': getApiKey(),
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true',
+      },
+      body: JSON.stringify({ model:MDL, max_tokens:1024, messages:[{role:'user',content:prompt}] })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const txt = (data.content||[]).map(c => c.text||'').join('');
+    document.getElementById('ai-audio-txt').textContent = txt;
+    toast('🤖 Análisis IA completo', 'ok');
+  } catch(err) {
+    document.getElementById('ai-audio-txt').textContent = '⚠ No se pudo conectar con IA. El diagnóstico local está disponible arriba.';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SOUND GUIDE
+// ═══════════════════════════════════════════════════════════════
+function buildSoundGuide() {
+  const container = document.getElementById('sound-guide');
+  if (container.children.length > 0) return; // already built
+  container.innerHTML = SOUND_DB.map(s => `
+    <div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);align-items:flex-start">
+      <span style="font-size:18px;flex-shrink:0">${s.ico}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;color:${s.color}">${s.name}</div>
+        <div style="font-size:8px;color:var(--lgray);line-height:1.6">${s.desc.slice(0,80)}...</div>
+        <div style="font-size:7px;color:var(--cyan);font-family:'Share Tech Mono',monospace;margin-top:2px">${s.freqRange[0]}-${s.freqRange[1]}Hz</div>
       </div>
+    </div>`).join('');
+}
 
+// ═══════════════════════════════════════════════════════════════
+//  DIAGRAM MODE (same as before, condensed)
+// ═══════════════════════════════════════════════════════════════
+function populateVehicles() {
+  const sel=document.getElementById('veh-select');
+  const brands={};
+  Object.entries(DB.vehicles).forEach(([k,v])=>{if(!brands[v.brand])brands[v.brand]=[];brands[v.brand].push({key:k,...v});});
+  Object.entries(brands).sort().forEach(([brand,vehs])=>{
+    const og=document.createElement('optgroup'); og.label=brand;
+    vehs.forEach(v=>{const o=document.createElement('option');o.value=v.key;o.textContent=`${v.model} — ${v.engine}`;og.appendChild(o);});
+    sel.appendChild(og);
+  });
+  sel.addEventListener('change',e=>{
+    S.selectedVeh=e.target.value||null;
+    document.getElementById('btn-db').disabled=!S.selectedVeh;
+    if(S.selectedVeh){const v=DB.vehicles[S.selectedVeh];const info=document.getElementById('veh-info');info.style.display='block';
+      info.innerHTML=`<div class="veh-info-row"><span>MOTOR</span><span>${v.engine}</span></div><div class="veh-info-row"><span>ECU</span><span>${v.ecu}</span></div><div class="veh-info-row"><span>PINES</span><span>${v.pines}</span></div>`;
+    } else document.getElementById('veh-info').style.display='none';
+  });
+}
 
-  
-</div>
-    <p class="mb-4 text-left">
-      Make sure that 2FA is correctly configured, and avoid a potential account lockout disaster.
-      If you're having trouble verifying, you'll be able to reconfigure 2FA for your account.
-    </p>
+function initDrop(){
+  const dz=document.getElementById('dz'),fi=document.getElementById('file-input');
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');loadFile(e.dataTransfer.files[0]);});
+  fi.addEventListener('change',e=>{if(e.target.files[0])loadFile(e.target.files[0]);});
+  document.getElementById('prev-x').addEventListener('click',e=>{e.stopPropagation();clearImage();});
+  document.getElementById('btn-analyze').addEventListener('click',runAnalysis);
+  document.getElementById('btn-db').addEventListener('click',showFromDB);
+  document.getElementById('btn-new').addEventListener('click',resetAll);
+  document.getElementById('btn-export').addEventListener('click',exportPNG);
+  document.getElementById('btn-export-img').addEventListener('click',exportPNG);
+}
+function loadFile(file){if(!file||!file.type.startsWith('image/'))return;S.imgMime=file.type;const r=new FileReader();r.onload=e=>{const url=e.target.result;S.imgData=url.split(',')[1];document.getElementById('prev-img').src=url;document.getElementById('prev-wrap').style.display='block';document.getElementById('dz').style.display='none';document.getElementById('btn-analyze').disabled=false;S.imgEl=new Image();S.imgEl.onload=sizeCanvases;S.imgEl.src=url;toast('✅ Imagen cargada','ok');};r.readAsDataURL(file);}
+function clearImage(){S.imgData=null;S.imgEl=null;document.getElementById('prev-wrap').style.display='none';document.getElementById('dz').style.display='block';document.getElementById('btn-analyze').disabled=true;document.getElementById('file-input').value='';}
+function resetAll(){clearImage();S.result=null;S.wires=[];S.activeFilter='ALL';document.getElementById('result-panel').style.display='none';document.getElementById('prog-wrap').style.display='none';}
 
-    <div class="d-flex flex-justify-center">
-      <!-- '"` --><!-- </textarea></xmp> --></option></form><form data-turbo="false" action="/settings/two_factor_checkup" accept-charset="UTF-8" method="get">
-        <button style="width: 200px; height: 40px" type="submit" data-view-component="true" class="Button--primary Button--medium Button">  <span class="Button-content">
-    <span class="Button-label">Verify 2FA now</span>
-  </span>
-</button>
+function showFromDB(){
+  if(!S.selectedVeh)return;const v=DB.vehicles[S.selectedVeh];S.source='db';
+  S.wires=v.pinout.map((pin,i)=>({id:'W'+String(i+1).padStart(2,'0'),pin:pin.p,señal:pin.s,color_cable:pin.c,hex:pin.h,col2:pin.col2,voltaje:pin.v,tipo:pin.t,dest:pin.dest,imp:(pin.t==='PWR'||pin.t==='GND')?'CRITICO':'NORMAL'}));
+  S.result=v;S.imgEl=null;
+  document.getElementById('result-panel').style.display='block';
+  document.getElementById('tbl-title').textContent=`${v.ecu} · ${v.brand} ${v.model}`;
+  buildFilterTabs();buildWireTable();buildReport(v);sizeCanvasesDB();renderCanvas();
+  toast(`✅ ${S.wires.length} pines — ${v.brand} ${v.model}`,'ok',4000);
+}
 
-</form>    </div>
-  </div>
+function buildFilterTabs(){
+  const c=document.getElementById('filter-tabs');c.innerHTML='';
+  const counts={ALL:S.wires.length};S.wires.forEach(w=>{counts[w.tipo]=(counts[w.tipo]||0)+1;});
+  c.appendChild(mkTab('ALL','📋 TODOS',counts.ALL,true));
+  Object.entries(TYPE_COLORS).forEach(([k,tc])=>{if(!counts[k])return;const t=mkTab(k,`${tc.ico} ${tc.label.toUpperCase()}`,counts[k],false);t.style.cssText=`color:${tc.hex};border-color:${tc.hex}44;--glow:${tc.glow}`;c.appendChild(t);});
+}
+function mkTab(key,label,count,active){const d=document.createElement('div');d.className='ftab'+(active?' on':'');d.dataset.filter=key;d.innerHTML=`${label} <span class="cnt">(${count})</span>`;d.addEventListener('click',()=>setFilter(key));return d;}
+function setFilter(type){
+  S.activeFilter=type;document.querySelectorAll('.ftab').forEach(t=>t.classList.toggle('on',t.dataset.filter===type));
+  document.querySelectorAll('#wire-tbody tr').forEach(tr=>{if(type==='ALL')tr.classList.remove('hidden-row');else tr.classList.toggle('hidden-row',tr.dataset.tipo!==type);});
+  renderCanvas();const tc=TYPE_COLORS[type];toast(`${tc?.ico||'📋'} Filtro: ${type==='ALL'?'Todos':tc?.label||type}`,'info');
+}
 
-</div>
+function buildWireTable(){
+  const tb=document.getElementById('wire-tbody');tb.innerHTML='';
+  S.wires.forEach(w=>{const tc=TYPE_COLORS[w.tipo]||TYPE_COLORS['SEN'];const tr=document.createElement('tr');tr.dataset.tipo=w.tipo;tr.style.cursor='pointer';
+    const sw=w.col2&&w.col2!==w.hex?`background:linear-gradient(135deg,${w.hex} 50%,${w.col2} 50%);`:`background:${w.hex};`;
+    tr.innerHTML=`<td><span class="wdot" style="${sw}box-shadow:0 0 4px ${w.hex}66"></span></td><td style="color:var(--white);font-size:8px"><strong>Pin ${w.pin}</strong> · ${w.señal}</td><td style="font-size:7.5px;color:${w.hex}">${w.color_cable||'—'}</td><td style="color:${tc.hex};font-size:8px">${w.voltaje}</td><td style="color:${tc.hex};font-size:7.5px;font-weight:700">${w.tipo}</td>`;
+    tr.addEventListener('click',()=>showWireDetail(w));tb.appendChild(tr);
+  });
+}
+function showWireDetail(w){const tc=TYPE_COLORS[w.tipo]||TYPE_COLORS['SEN'];const pop=document.getElementById('det-pop');pop.style.display='block';document.getElementById('det-title').textContent=`Pin ${w.pin} — ${w.señal}`;document.getElementById('det-title').style.color=tc.hex;document.getElementById('det-body').innerHTML=`<b style="color:var(--white)">Tipo:</b> ${tc.ico} ${tc.label}<br><b style="color:var(--white)">Cable:</b> <span style="color:${w.hex}">${w.color_cable||'—'}</span><br><b style="color:var(--white)">Voltaje:</b> ${w.voltaje}<br><b style="color:var(--white)">Destino:</b> ${w.dest||'—'}`;pop.scrollIntoView({behavior:'smooth',block:'nearest'});highlightWire(w);}
 
-      </main>
-  </div>
+function buildReport(data){
+  let txt=`📊 DATOS DESDE BASE DE DATOS PROPART\n\n📌 ${data.sistema||''}\n🚗 ${data.brand||''} ${data.model||''} ${data.version||''}\n🔧 ${data.engine||''}\n\n${data.descripcion||''}\n\n`;
+  if(data.notas?.length){txt+='📋 NOTAS:\n';data.notas.forEach(n=>txt+='• '+n+'\n');txt+='\n';}
+  if(data.fallas?.length){txt+='⚠ FALLAS:\n';data.fallas.forEach(f=>txt+='• '+f+'\n');}
+  document.getElementById('report-txt').textContent=txt;
+}
 
-          <div class="footer-session-authentication" role="contentinfo">
-    <ul class="footer-session-authentication-links">
-        <li>
-          <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to Terms&quot;,&quot;label&quot;:&quot;text:terms&quot;}" href="https://docs.github.com/site-policy/github-terms/github-terms-of-service" data-view-component="true" class="Link--secondary Link">Terms</a>
-        </li>
+// Canvas rendering (condensed)
+function sizeCanvasesDB(){const wrap=document.getElementById('canvas-wrap');const W=wrap.clientWidth;const H=Math.max(300,Math.min(600,S.wires.length*18+80));[canDiag,canOverlay,canHit].forEach(c=>{c.width=W;c.height=H;});wrap.style.height=H+'px';S.canW=W;S.canH=H;}
+function sizeCanvases(){if(S.source==='db'&&!S.imgEl){sizeCanvasesDB();return;}if(!S.imgEl)return;const wrap=document.getElementById('canvas-wrap');const W=wrap.clientWidth;const H=Math.round(W*S.imgEl.naturalHeight/S.imgEl.naturalWidth);[canDiag,canOverlay,canHit].forEach(c=>{c.width=W;c.height=H;});wrap.style.height=H+'px';S.canW=W;S.canH=H;}
 
-        <li>
-          <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to privacy&quot;,&quot;label&quot;:&quot;text:privacy&quot;}" href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement" data-view-component="true" class="Link--secondary Link">Privacy</a>
-        </li>
+function renderCanvas(){
+  const W=S.canW,H=S.canH;if(!W||!H)return;cx.clearRect(0,0,W,H);cx2.clearRect(0,0,W,H);
+  if(S.imgEl){if(S.viewMode==='xray')cx.filter='invert(1) hue-rotate(200deg) brightness(1.15)';else if(S.viewMode==='colored')cx.filter='grayscale(.85) brightness(.55)';else cx.filter='none';cx.drawImage(S.imgEl,0,0,W,H);cx.filter='none';if(S.viewMode!=='schematic')drawOverlay(W,H);}
+  else drawSchematic(W,H);
+  const f=getFiltered();document.getElementById('c-stats').textContent=`${f.length}/${S.wires.length}`;
+}
+function getFiltered(){return S.activeFilter==='ALL'?S.wires:S.wires.filter(w=>w.tipo===S.activeFilter);}
 
-        <li>
-          <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to docs&quot;,&quot;label&quot;:&quot;text:docs&quot;}" href="https://docs.github.com" data-view-component="true" class="Link--secondary Link">Docs</a>
-        </li>
+function drawSchematic(W,H){
+  const wires=getFiltered();cx.fillStyle='#050B14';cx.fillRect(0,0,W,H);
+  if(!wires.length)return;
+  cx.strokeStyle='rgba(30,140,224,0.04)';cx.lineWidth=1;for(let y=0;y<H;y+=20){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke();}
+  const ecuW=60,ecuH=Math.min(H-40,wires.length*16+30),ecuX=18,ecuY=(H-ecuH)/2;
+  cx.fillStyle='rgba(168,85,247,.08)';cx.strokeStyle='rgba(168,85,247,.4)';cx.lineWidth=2;roundRect(cx,ecuX,ecuY,ecuW,ecuH,8);cx.fill();cx.stroke();
+  cx.fillStyle='#A855F7';cx.font='bold 10px "Rajdhani",sans-serif';cx.textAlign='center';cx.fillText('ECU',ecuX+ecuW/2,ecuY+15);
+  const destX=W-80,destW=60;cx.fillStyle='rgba(0,196,140,.06)';cx.strokeStyle='rgba(0,196,140,.3)';cx.lineWidth=2;roundRect(cx,destX,ecuY,destW,ecuH,8);cx.fill();cx.stroke();
+  cx.fillStyle='#00C48C';cx.font='bold 10px "Rajdhani",sans-serif';cx.fillText('DESTINO',destX+destW/2,ecuY+15);
+  const spacing=Math.min(16,(ecuH-35)/wires.length),startY=ecuY+32;
+  wires.forEach((w,i)=>{
+    const tc=TYPE_COLORS[w.tipo]||TYPE_COLORS['SEN'];const y=startY+i*spacing;const x1=ecuX+ecuW,x2=destX;
+    cx.fillStyle=tc.hex;cx.font='bold 7px "Share Tech Mono",monospace';cx.textAlign='right';cx.fillText(String(w.pin),ecuX+ecuW-5,y+3);
+    cx2.save();cx2.globalAlpha=.85;cx2.shadowColor=tc.glow;cx2.shadowBlur=8;cx2.strokeStyle=w.hex||tc.hex;cx2.lineWidth=2.5;cx2.lineCap='round';
+    const yOff=(i%2===0?-1:1)*(i%5)*1.5;cx2.beginPath();cx2.moveTo(x1,y);cx2.bezierCurveTo(x1+(x2-x1)*.3,y+yOff,x1+(x2-x1)*.7,y+yOff,x2,y);cx2.stroke();
+    if(w.col2&&w.col2!==w.hex){cx2.globalAlpha=.5;cx2.strokeStyle=w.col2;cx2.lineWidth=1;cx2.setLineDash([4,4]);cx2.beginPath();cx2.moveTo(x1,y);cx2.bezierCurveTo(x1+(x2-x1)*.3,y+yOff,x1+(x2-x1)*.7,y+yOff,x2,y);cx2.stroke();cx2.setLineDash([]);}
+    cx2.shadowBlur=0;cx2.globalAlpha=.9;cx2.fillStyle=w.hex||tc.hex;cx2.beginPath();cx2.arc(x1,y,3,0,Math.PI*2);cx2.fill();cx2.beginPath();cx2.arc(x2,y,3,0,Math.PI*2);cx2.fill();
+    const midX=(x1+x2)/2;const label=w.señal.length>16?w.señal.slice(0,14)+'…':w.señal;cx2.font='bold 7px "Share Tech Mono",monospace';cx2.textAlign='center';const tw=cx2.measureText(label).width;cx2.fillStyle='rgba(5,11,20,.85)';cx2.fillRect(midX-tw/2-3,y-8,tw+6,12);cx2.fillStyle=w.hex||tc.hex;cx2.fillText(label,midX,y+1);
+    cx2.font='6px "Share Tech Mono",monospace';cx2.fillStyle='rgba(106,140,170,.7)';cx2.fillText(w.voltaje,midX,y+9);
+    cx2.restore();w._x1=x1;w._y1=y;w._x2=x2;w._y2=y;w._cx=midX;w._cy=y;
+  });
+  document.getElementById('c-badge').textContent=S.activeFilter==='ALL'?'ESQUEMA COMPLETO':TYPE_COLORS[S.activeFilter]?.label?.toUpperCase()||S.activeFilter;
+}
 
-        <li>
-            <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to contact&quot;,&quot;label&quot;:&quot;text:contact&quot;}" href="https://support.github.com" data-view-component="true" class="Link--secondary Link">Contact GitHub Support</a>
-        </li>
+function drawOverlay(W,H){const wires=getFiltered();wires.forEach((w,i)=>{const tc=TYPE_COLORS[w.tipo]||TYPE_COLORS['SEN'];const n=wires.length;const seed=(typeof w.pin==='string'?w.pin.charCodeAt(0):w.pin||i)*17;const x1=lerp(.06,.22,(seed%9)/9)*W;const y1=lerp(.08,.92,i/Math.max(n-1,1))*H;const x2=lerp(.78,.96,(seed%7)/7)*W;const y2=lerp(.08,.92,((i+2)%n)/Math.max(n-1,1))*H;const cpx=(x1+x2)/2+Math.sin(seed*.9)*W*.12;const cpy=(y1+y2)/2+Math.cos(seed*1.1)*H*.1;w._x1=x1;w._y1=y1;w._x2=x2;w._y2=y2;w._cx=cpx;w._cy=cpy;cx2.save();cx2.globalAlpha=.85;cx2.shadowColor=tc.glow;cx2.shadowBlur=10;cx2.strokeStyle=w.hex||tc.hex;cx2.lineWidth=2.5;cx2.lineCap='round';cx2.beginPath();cx2.moveTo(x1,y1);cx2.quadraticCurveTo(cpx,cpy,x2,y2);cx2.stroke();cx2.shadowBlur=0;cx2.fillStyle=w.hex||tc.hex;cx2.beginPath();cx2.arc(x1,y1,4,0,Math.PI*2);cx2.fill();cx2.beginPath();cx2.arc(x2,y2,4,0,Math.PI*2);cx2.fill();const label=w.señal.length>14?w.señal.slice(0,12)+'…':w.señal;cx2.font='bold 7px "Share Tech Mono",monospace';cx2.textAlign='center';const tw=cx2.measureText(label).width;cx2.fillStyle='rgba(3,7,14,.8)';cx2.fillRect(cpx-tw/2-3,cpy-9,tw+6,13);cx2.fillStyle=w.hex||tc.hex;cx2.fillText(label,cpx,cpy);cx2.restore();});}
 
-    </ul>
-  </div>
+function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);c.closePath();}
+function lerp(a,b,t){return a+(b-a)*Math.min(Math.max(t,0),1);}
+function highlightWire(w){if(!w._cx){renderCanvas();return;}cx3.clearRect(0,0,canHit.width,canHit.height);cx3.save();cx3.shadowColor='#fff';cx3.shadowBlur=22;cx3.strokeStyle='#fff';cx3.lineWidth=5;cx3.globalAlpha=.7;cx3.setLineDash([8,4]);cx3.beginPath();cx3.moveTo(w._x1,w._y1);if(S.source==='db'&&!S.imgEl)cx3.lineTo(w._x2,w._y2);else cx3.quadraticCurveTo(w._cx,w._cy,w._x2,w._y2);cx3.stroke();cx3.restore();setTimeout(()=>cx3.clearRect(0,0,canHit.width,canHit.height),3000);}
 
+function initViewTabs(){document.querySelectorAll('.vtab').forEach(t=>t.addEventListener('click',()=>{S.viewMode=t.dataset.mode;document.querySelectorAll('.vtab').forEach(x=>x.classList.toggle('on',x.dataset.mode===S.viewMode));renderCanvas();}));canHit.addEventListener('click',e=>{if(!S.wires.length)return;const rect=canHit.getBoundingClientRect();const sx=canHit.width/rect.width;const x=(e.clientX-rect.left)*sx;const y=(e.clientY-rect.top)*sx;let best=null,bestD=Infinity;getFiltered().forEach(w=>{if(w._cx===undefined)return;const d=Math.hypot(x-w._cx,y-w._cy);if(d<bestD){bestD=d;best=w;}});if(best&&bestD<70)showWireDetail(best);});}
+function initZoom(){document.getElementById('z-in').addEventListener('click',()=>zoom(.3));document.getElementById('z-out').addEventListener('click',()=>zoom(-.3));document.getElementById('z-fit').addEventListener('click',resetZoom);}
+function zoom(d){S.zoom=Math.max(.25,Math.min(6,S.zoom+d));document.getElementById('canvas-wrap').style.transform=`scale(${S.zoom})`;document.getElementById('canvas-wrap').style.transformOrigin='top left';document.getElementById('z-label').textContent=Math.round(S.zoom*100)+'%';}
+function resetZoom(){S.zoom=1;document.getElementById('canvas-wrap').style.transform='scale(1)';document.getElementById('z-label').textContent='100%';}
+function initFilters(){document.getElementById('btn-all').addEventListener('click',()=>{setFilter('ALL');});document.getElementById('btn-trace').addEventListener('click',()=>{if(S.viewMode==='schematic')S.viewMode='colored';document.querySelectorAll('.vtab').forEach(x=>x.classList.toggle('on',x.dataset.mode===S.viewMode));renderCanvas();});document.getElementById('comp-input').addEventListener('input',()=>{const q=document.getElementById('comp-input').value.toLowerCase();document.querySelectorAll('#wire-tbody tr').forEach(tr=>{if(!q)tr.classList.remove('hidden-row');else tr.classList.toggle('hidden-row',!tr.textContent.toLowerCase().includes(q));});});}
+function clearSearch(){document.getElementById('comp-input').value='';document.querySelectorAll('#wire-tbody tr').forEach(tr=>tr.classList.remove('hidden-row'));}
+window.clearSearch=clearSearch;
 
+function renderLegend(){const g=document.getElementById('leg-grid');g.innerHTML=Object.entries(TYPE_COLORS).map(([k,v])=>`<div class="leg-row" onclick="setFilter('${k}')"><div class="wire-swatch" style="background:${v.hex};box-shadow:0 0 6px ${v.hex}55"></div><div><div class="leg-name">${v.ico} ${k}</div><div class="leg-v">${v.label}</div></div></div>`).join('');}
 
+async function runAnalysis(){
+  if(!S.imgData){toast('Carga diagrama','err');return;}const key=getApiKey();if(!key){toast('⚠ Sin API Key','warn');if(S.selectedVeh)showFromDB();return;}
+  document.getElementById('btn-analyze').disabled=true;document.getElementById('prog-wrap').style.display='block';setP(20,'📡 Enviando a Claude...');
+  try{const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:MDL,max_tokens:4096,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:S.imgMime,data:S.imgData}},{type:'text',text:'Analiza este diagrama eléctrico automotriz. Responde SOLO JSON: {"titulo":"","sistema":"","brand":"","model":"","engine":"","ecu":"","pines":0,"descripcion":"","pinout":[{"p":1,"s":"función","c":"color","h":"#hex","col2":"#hex2","v":"voltaje","t":"SEN|ACT|PWR|GND|COM","dest":"destino"}],"notas":[""],"fallas":[""]}\nTipos: SEN=sensor, ACT=actuador, PWR=alimentación, GND=tierra, COM=comunicación.'}]}]})});
+  setP(70,'🧠 Procesando...');if(!res.ok)throw new Error(`HTTP ${res.status}`);const data=await res.json();const raw=(data.content||[]).map(c=>c.text||'').join('');let parsed;try{const m=raw.match(/\{[\s\S]*\}/);parsed=JSON.parse(m?m[0]:raw);}catch(_){parsed={titulo:'Parcial',descripcion:raw.slice(0,300),pinout:[],notas:[],fallas:[]};}
+  S.source='ia';S.result=parsed;S.wires=(parsed.pinout||[]).map((pin,i)=>({id:'W'+String(i+1).padStart(2,'0'),pin:pin.p,señal:pin.s,color_cable:pin.c,hex:pin.h||'#00D4E8',col2:pin.col2||pin.h||'#00D4E8',voltaje:pin.v,tipo:pin.t||'SEN',dest:pin.dest||'',imp:(pin.t==='PWR'||pin.t==='GND')?'CRITICO':'NORMAL'}));
+  setP(100,'✅ Completo');await delay(350);document.getElementById('prog-wrap').style.display='none';document.getElementById('result-panel').style.display='block';document.getElementById('tbl-title').textContent=parsed.ecu||parsed.titulo||'IA';
+  buildFilterTabs();buildWireTable();buildReport(parsed);sizeCanvases();renderCanvas();toast(`✅ ${S.wires.length} cables IA`,'ok');
+  }catch(err){document.getElementById('prog-wrap').style.display='none';document.getElementById('btn-analyze').disabled=false;toast('Error: '+err.message.slice(0,50),'err');}
+}
+function setP(pct,msg){document.getElementById('prog-fill').style.width=pct+'%';const t=document.getElementById('prog-txt');t.textContent=msg;t.style.color=pct>=100?'var(--green)':'var(--cyan)';}
+function exportPNG(){if(S.canW===0)return;const ec=document.createElement('canvas');ec.width=S.canW;ec.height=S.canH;const c=ec.getContext('2d');c.drawImage(canDiag,0,0);c.drawImage(canOverlay,0,0);const a=document.createElement('a');a.href=ec.toDataURL('image/png');a.download=`propart_${Date.now()}.png`;a.click();toast('📥 PNG exportado','ok');}
 
-
-
-  <div id="ajax-error-message" class="ajax-error-message flash flash-error" hidden>
-    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
-    <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
-</svg>
-    <button type="button" class="flash-close js-ajax-error-dismiss" aria-label="Dismiss error">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
-    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-</svg>
-    </button>
-    You can’t perform that action at this time.
-  </div>
-
-    <template id="site-details-dialog">
-  <details class="details-reset details-overlay details-overlay-dark lh-default color-fg-default hx_rsm" open>
-    <summary role="button" aria-label="Close dialog"></summary>
-    <details-dialog class="Box Box--overlay d-flex flex-column anim-fade-in fast hx_rsm-dialog hx_rsm-modal">
-      <button class="Box-btn-octicon m-0 btn-octicon position-absolute right-0 top-0" type="button" aria-label="Close dialog" data-close-dialog>
-        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
-    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-</svg>
-      </button>
-      <div class="octocat-spinner tmp-my-6 js-details-dialog-spinner"></div>
-    </details-dialog>
-  </details>
-</template>
-
-    <div class="Popover js-hovercard-content position-absolute" style="display: none; outline: none;">
-  <div class="Popover-message Popover-message--bottom-left Popover-message--large Box color-shadow-large" style="width:360px;">
-  </div>
-</div>
-
-    <template id="snippet-clipboard-copy-button">
-  <div class="zeroclipboard-container position-absolute right-0 top-0">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn js-clipboard-copy m-2 p-0" data-copy-feedback="Copied!" data-tooltip-direction="w">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon m-2">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none m-2">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
-  </div>
-</template>
-<template id="snippet-clipboard-copy-button-unpositioned">
-  <div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
-  </div>
-</template>
-
-
-    <style>
-      .user-mention[href$="/84-fmill-mel30"] {
-        color: var(--color-user-mention-fg);
-        background-color: var(--bgColor-attention-muted, var(--color-attention-subtle));
-        border-radius: 2px;
-        margin-left: -2px;
-        margin-right: -2px;
-      }
-      .user-mention[href$="/84-fmill-mel30"]:before,
-      .user-mention[href$="/84-fmill-mel30"]:after {
-        content: '';
-        display: inline-block;
-        width: 2px;
-      }
-    </style>
-
-
-    </div>
-    <div id="js-global-screen-reader-notice" class="sr-only mt-n1" aria-live="polite" aria-atomic="true" ></div>
-    <div id="js-global-screen-reader-notice-assertive" class="sr-only mt-n1" aria-live="assertive" aria-atomic="true"></div>
-  </body>
+let _tt;function toast(msg,type='info',ms=3200){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),ms);}
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+</script>
+</body>
 </html>
-
